@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Shengtai.Web.Telerik
 {
-    public class DataSourceResponse<TModel> : IDataSourceResponse<TModel> where TModel : class
+    public class DataSourceResponse<TModel> : IDataSourceResponse<TModel>, IDataSourceError where TModel : class
     {
         public ICollection<TModel> DataCollection { get; set; }
 

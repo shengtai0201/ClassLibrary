@@ -6,9 +6,9 @@ namespace Shengtai.Web.Telerik.Http
     {
         DataSourceResponse<TModel> Read(DataSourceRequest request);
 
-        bool Create(TModel model, DataSourceResponse<TModel> response);
+        bool Create(TModel model, IDataSourceError error);
 
-        bool? Update(TKey key, TModel model, DataSourceResponse<TModel> response);
+        bool? Update(TKey key, TModel model, IDataSourceError error);
 
         bool? Destroy(TKey key);
     }
