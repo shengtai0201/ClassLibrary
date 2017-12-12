@@ -1,6 +1,6 @@
 # ClassLibrary
 通用函式庫<br/>
-.NET Framework 4.51 => Shengtai<br/>
-.NET Core 2.0 => ShengtaiCore<br/>
+Shengtai .NET Framework 4.51<br/>
+ShengtaiCore .NET Core 2.0<br/>
 <br/>
-Update-Package -reinstall
+修復套件 Update-Package -reinstall

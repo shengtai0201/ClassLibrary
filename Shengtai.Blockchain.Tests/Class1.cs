@@ -95,7 +95,6 @@ namespace Shengtai.Blockchain.Tests
                 Console.WriteLine(paymentScript);
                 var address = paymentScript.GetDestinationAddress(Network.Main);
                 Console.WriteLine(address);
-                Console.WriteLine();
             }
             Console.WriteLine();
 
@@ -109,8 +108,8 @@ namespace Shengtai.Blockchain.Tests
                 Console.WriteLine(paymentScript);
                 var address = paymentScript.GetDestinationAddress(Network.Main);
                 Console.WriteLine(address);
-                Console.WriteLine();
             }
+            Console.WriteLine();
 
             var inputs = transaction.Inputs;
             foreach (TxIn input in inputs)
@@ -118,8 +117,8 @@ namespace Shengtai.Blockchain.Tests
                 OutPoint previousOutpoint = input.PrevOut;
                 Console.WriteLine(previousOutpoint.Hash);
                 Console.WriteLine(previousOutpoint.N);
-                Console.WriteLine();
             }
+            Console.WriteLine();
         }
     }
 }
