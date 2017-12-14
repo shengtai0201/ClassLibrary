@@ -95,7 +95,6 @@ namespace Shengtai.Blockchain.Tests
                 Console.WriteLine(paymentScript);
                 var address = paymentScript.GetDestinationAddress(Network.Main);
                 Console.WriteLine(address);
-                Console.WriteLine();
             }
             Console.WriteLine();
 
@@ -109,8 +108,8 @@ namespace Shengtai.Blockchain.Tests
                 Console.WriteLine(paymentScript);
                 var address = paymentScript.GetDestinationAddress(Network.Main);
                 Console.WriteLine(address);
-                Console.WriteLine();
             }
+            Console.WriteLine();
 
             var inputs = transaction.Inputs;
             foreach (TxIn input in inputs)
@@ -118,8 +117,23 @@ namespace Shengtai.Blockchain.Tests
                 OutPoint previousOutpoint = input.PrevOut;
                 Console.WriteLine(previousOutpoint.Hash);
                 Console.WriteLine(previousOutpoint.N);
-                Console.WriteLine();
             }
+            Console.WriteLine();
+
+            Money twentyOneBtc = new Money(21, MoneyUnit.BTC);
+            var scriptPubKey = transaction.Outputs.First().ScriptPubKey;
+            TxOut txOut = new TxOut(twentyOneBtc, scriptPubKey);
+
+            OutPoint firstOutPoint = receivedCoins.First().Outpoint;
+            Console.WriteLine(firstOutPoint.Hash);
+            Console.WriteLine(firstOutPoint.N);
+            Console.WriteLine();
+
+            Console.WriteLine(transaction.Inputs.Count);
+            Console.WriteLine();
+
+            Money spentAmount = Money.Zero;
+            //foreach(var spentCoin in spentCoins)
         }
     }
 }
