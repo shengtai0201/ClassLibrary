@@ -16,19 +16,24 @@ namespace Shengtai
         where TParameter : DbParameter, new()
         where TContext : DbContext
     {
-        private readonly string connectionStringName;
+        //private readonly string connectionStringName;
         protected TContext DbContext { get; private set; }
         //protected ILogger Logger { get; private set; }
 
         public IPrincipal CurrentUser { protected get; set; }
 
-        protected Repository(string connectionStringName)
+        protected string connectionString;
+        //protected Repository(string connectionStringName)
+        protected Repository()
         {
-            this.connectionStringName = connectionStringName;
-            this.connectionString = string.Empty;
+            //this.connectionStringName = connectionStringName;
+            //this.connectionString = string.Empty;
 
             if (this.DbContext == null)
                 this.DbContext = DependencyResolver.Current.GetService<TContext>();
+
+            if (string.IsNullOrEmpty(this.connectionString) && this.DbContext != null)
+                this.connectionString = this.DbContext.Database.Connection.ConnectionString;
 
             //if (this.Logger == null)
             //    this.Logger = DependencyResolver.Current.GetService<ILogger>();
@@ -58,11 +63,11 @@ namespace Shengtai
         protected void ReadData(Action<DbDataReader> dataReaderAction, string cmdText, params TParameter[] values)
         {
             //var selectConnection = new SqlConnection(this.ConnectionString);
-            var selectConnection = Activator.CreateInstance(typeof(TConnection), this.ConnectionString) as DbConnection;
+            var selectConnection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
             selectConnection.Open();
 
             //var command = new SqlCommand(cmdText, selectConnection);
-            var command = Activator.CreateInstance(typeof(TCommand), cmdText, selectConnection) as DbCommand;
+            var command = Activator.CreateInstance(typeof(TCommand), cmdText, selectConnection) as TCommand;
 
             if (values != null)
                 command.Parameters.AddRange(values);
@@ -82,11 +87,11 @@ namespace Shengtai
         protected void ReadDataSingle(Action<DbDataReader> dataReaderAction, string cmdText, params TParameter[] values)
         {
             //var selectConnection = new SqlConnection(this.ConnectionString);
-            var selectConnection = Activator.CreateInstance(typeof(TConnection), this.ConnectionString) as DbConnection;
+            var selectConnection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
             selectConnection.Open();
 
             //var command = new SqlCommand(cmdText, selectConnection);
-            var command = Activator.CreateInstance(typeof(TCommand), cmdText, selectConnection) as DbCommand;
+            var command = Activator.CreateInstance(typeof(TCommand), cmdText, selectConnection) as TCommand;
 
             if (values != null)
                 command.Parameters.AddRange(values);
@@ -102,15 +107,38 @@ namespace Shengtai
             selectConnection.Dispose();
         }
 
-        //protected object ExecuteScalar(string cmdText, params SqlParameter[] values)
-        protected object ExecuteScalar(string cmdText, params TParameter[] values)
+        protected async Task ReadDataSingleAsync(Action<DbDataReader> dataReaderAction, string cmdText, params TParameter[] values)
         {
             //var selectConnection = new SqlConnection(this.ConnectionString);
-            var selectConnection = Activator.CreateInstance(typeof(TConnection), this.ConnectionString) as DbConnection;
+            var selectConnection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
             selectConnection.Open();
 
             //var command = new SqlCommand(cmdText, selectConnection);
-            var command = Activator.CreateInstance(typeof(TCommand), cmdText, selectConnection) as DbCommand;
+            var command = Activator.CreateInstance(typeof(TCommand), cmdText, selectConnection) as TCommand;
+
+            if (values != null)
+                command.Parameters.AddRange(values);
+
+            //SqlDataReader dataReader = command.ExecuteReader();
+            DbDataReader dataReader = await command.ExecuteReaderAsync();
+            if (await dataReader.ReadAsync())
+                dataReaderAction(dataReader);
+
+            dataReader.Close();
+            command.Dispose();
+            selectConnection.Close();
+            selectConnection.Dispose();
+        }
+
+        //protected object ExecuteScalar(string cmdText, params SqlParameter[] values)
+        protected virtual object ExecuteScalar(string cmdText, params TParameter[] values)
+        {
+            //var selectConnection = new SqlConnection(this.ConnectionString);
+            var selectConnection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
+            selectConnection.Open();
+
+            //var command = new SqlCommand(cmdText, selectConnection);
+            var command = Activator.CreateInstance(typeof(TCommand), cmdText, selectConnection) as TCommand;
 
             if (values != null)
                 command.Parameters.AddRange(values);
@@ -128,11 +156,11 @@ namespace Shengtai
         protected async Task<object> ExecuteScalarAsync(string cmdText, params TParameter[] values)
         {
             //var selectConnection = new SqlConnection(this.ConnectionString);
-            var selectConnection = Activator.CreateInstance(typeof(TConnection), this.ConnectionString) as DbConnection;
+            var selectConnection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
             selectConnection.Open();
 
             //var command = new SqlCommand(cmdText, selectConnection);
-            var command = Activator.CreateInstance(typeof(TCommand), cmdText, selectConnection) as DbCommand;
+            var command = Activator.CreateInstance(typeof(TCommand), cmdText, selectConnection) as TCommand;
 
             if (values != null)
                 command.Parameters.AddRange(values);
@@ -150,11 +178,11 @@ namespace Shengtai
         protected int ExecuteNonQuery(string cmdText, params TParameter[] values)
         {
             //var selectConnection = new SqlConnection(this.ConnectionString);
-            var selectConnection = Activator.CreateInstance(typeof(TConnection), this.ConnectionString) as DbConnection;
+            var selectConnection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
             selectConnection.Open();
 
             //var command = new SqlCommand(cmdText, selectConnection);
-            var command = Activator.CreateInstance(typeof(TCommand), cmdText, selectConnection) as DbCommand;
+            var command = Activator.CreateInstance(typeof(TCommand), cmdText, selectConnection) as TCommand;
 
             if (values != null)
                 command.Parameters.AddRange(values);
@@ -209,16 +237,15 @@ namespace Shengtai
             return fullName.Substring(startIndex: 2, length: 1);
         }
 
-        private string connectionString;
-        protected string ConnectionString
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(this.connectionString))
-                    this.connectionString = WebConfigurationManager.ConnectionStrings[this.connectionStringName].ConnectionString;
+        //protected string ConnectionString
+        //{
+        //    get
+        //    {
+        //        if (string.IsNullOrEmpty(this.connectionString))
+        //            this.connectionString = WebConfigurationManager.ConnectionStrings[this.connectionStringName].ConnectionString;
 
-                return this.connectionString;
-            }
-        }
+        //        return this.connectionString;
+        //    }
+        //}
     }
 }
