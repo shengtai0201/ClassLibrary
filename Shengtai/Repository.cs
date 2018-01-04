@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Owin;
+using System;
 using System.Data;
 using System.Data.Common;
 using System.Data.Entity;
@@ -10,7 +11,7 @@ using System.Web.Mvc;
 
 namespace Shengtai
 {
-    public abstract class Repository<TConnection, TCommand, TParameter, TContext> : ICurrentUser
+    public abstract class Repository<TConnection, TCommand, TParameter, TContext> : IController
         where TConnection : DbConnection, new()
         where TCommand : DbCommand, new()
         where TParameter : DbParameter, new()
@@ -21,6 +22,7 @@ namespace Shengtai
         //protected ILogger Logger { get; private set; }
 
         public IPrincipal CurrentUser { protected get; set; }
+        public IOwinContext OwinContext { protected get; set; }
 
         protected string connectionString;
         //protected Repository(string connectionStringName)

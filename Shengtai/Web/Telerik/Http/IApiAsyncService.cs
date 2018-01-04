@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Shengtai.Web.Telerik.Http
 {
-    public interface IApiAsyncService<TModel, TKey> : ICurrentUser, IDisposable where TModel : class
+    public interface IApiAsyncService<TModel, TKey> : IController, IDisposable where TModel : class
     {
         Task<DataSourceResponse<TModel>> Read(DataSourceRequest request);
 

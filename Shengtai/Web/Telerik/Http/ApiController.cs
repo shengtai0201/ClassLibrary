@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.ModelBinding;
+using System.Web;
 
 namespace Shengtai.Web.Telerik.Http
 {
@@ -14,6 +15,7 @@ namespace Shengtai.Web.Telerik.Http
         {
             this.service = service;
             this.service.CurrentUser = this.User;
+            this.service.OwinContext = HttpContext.Current.GetOwinContext();
         }
 
         [HttpGet]
