@@ -9,12 +9,25 @@ namespace Shengtai
         public static string GetEnumDescription(this Enum value)
         {
             FieldInfo fi = value.GetType().GetField(value.ToString());
-            var attributes = (DescriptionAttribute[]) fi.GetCustomAttributes(typeof(DescriptionAttribute), inherit: false);
+            var attributes = (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), inherit: false);
 
             if (attributes != null && attributes.Length > 0)
                 return attributes[0].Description;
             else
                 return value.ToString();
+        }
+
+        public static string GetEnumDescription<TEnum>(this int value) where TEnum : struct
+        {
+            return GetEnumDescription<TEnum>(value.ToString());
+        }
+
+        public static string GetEnumDescription<TEnum>(this string value) where TEnum : struct
+        {
+            if (Enum.TryParse<TEnum>(value, out TEnum result))
+                return GetEnumDescription(result as Enum);
+
+            return null;
         }
 
         public static int? Plus(this int? leftValue, int? rightValue)

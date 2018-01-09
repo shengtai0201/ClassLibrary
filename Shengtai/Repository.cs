@@ -230,6 +230,14 @@ namespace Shengtai
                 return Convert.ToBoolean(value);
         }
 
+        protected string DbToEnumDescription<TEnum>(object value) where TEnum : struct
+        {
+            if (value == DBNull.Value)
+                return null;
+            else
+                return value.ToString().GetEnumDescription<TEnum>();
+        }
+
         protected string GetDayOfWeekName(DateTime dateTime)
         {
             var provider = new System.Globalization.CultureInfo(name: "zh-TW");
