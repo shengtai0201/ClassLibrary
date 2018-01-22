@@ -11,6 +11,6 @@ namespace Shengtai
     public abstract class NpgsqlRepository<TContext> : Repository<NpgsqlConnection, NpgsqlCommand, NpgsqlParameter, TContext>
         where TContext : DbContext
     {
-        //public NpgsqlRepository(string connectionStringName) : base(connectionStringName) { }
+
     }
 }
