@@ -16,27 +16,47 @@ namespace Shengtai
         where TDbContext : DbContext
     {
         protected TDbContext DbContext { get; private set; }
+        private IAppSettings appSettings;
 
-        protected Repository(IConfiguration configuration, TDbContext dbContext)
+        protected Repository(IAppSettings appSettings, TDbContext dbContext)
         {
+            this.appSettings = appSettings;
             this.DbContext = dbContext;
-
-            var builer = new ConfigurationBuilder();
         }
 
-        protected void ExecuteReader()
+        protected void Read(Action<DbDataReader> action, string cmdText, params TParameter[] values)
         {
-            string cmdText = @"SELECT u.Id FROM AspNetUsers u WHERE u.InvitationCode = @InvitationCode";
-            var connection = new SqlConnection(System.Configuration.GetConnectionString("DefaultConnection"));
+            var connection = Activator.CreateInstance(typeof(TConnection), this.appSettings.DefaultConnection) as TConnection;
             connection.Open();
 
-            var command = new SqlCommand(cmdText, connection);
-            command.Parameters.AddWithValue(parameterName: "InvitationCode", value: result);
-            SqlDataReader reader = command.ExecuteReader();
-            if (reader.Read())
-                id = reader["Id"].ToString();
+            var command = Activator.CreateInstance(typeof(TCommand), cmdText, connection) as TCommand;
+            if (values != null)
+                command.Parameters.AddRange(values);
 
-            reader.Close();
+            DbDataReader dataReader = command.ExecuteReader();
+            while (dataReader.Read())
+                action(dataReader);
+
+            dataReader.Close();
+            command.Dispose();
+            connection.Close();
+            connection.Dispose();
+        }
+
+        protected void ReadSingle(Action<DbDataReader> action, string cmdText, params TParameter[] values)
+        {
+            var connection = Activator.CreateInstance(typeof(TConnection), this.appSettings.DefaultConnection) as TConnection;
+            connection.Open();
+
+            var command = Activator.CreateInstance(typeof(TCommand), cmdText, connection) as TCommand;
+            if (values != null)
+                command.Parameters.AddRange(values);
+
+            DbDataReader dataReader = command.ExecuteReader();
+            if (dataReader.Read())
+                action(dataReader);
+
+            dataReader.Close();
             command.Dispose();
             connection.Close();
             connection.Dispose();
