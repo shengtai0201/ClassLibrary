@@ -81,5 +81,13 @@ namespace Shengtai
                     return null;
             }
         }
+
+        public static double Division(this int molecular, int denominator)
+        {
+            if (molecular == 0 || denominator == 0)
+                return 0;
+
+            return molecular * 1.0 / denominator;
+        }
     }
 }

@@ -9,33 +9,53 @@ using System.Threading.Tasks;
 
 namespace Shengtai
 {
-    public abstract class Repository<TConnection, TCommand, TParameter, TDbContext>
+    public abstract class Repository<TConnection, TCommand, TParameter, TDataAdapter, TDbContext>
         where TConnection : DbConnection, new()
         where TCommand : DbCommand, new()
         where TParameter : DbParameter, new()
+        where TDataAdapter : DbDataAdapter, new()
         where TDbContext : DbContext
     {
         protected TDbContext DbContext { get; private set; }
-        private IAppSettings appSettings;
+        protected IAppSettings AppSettings { get; private set; }
 
         protected Repository(IAppSettings appSettings, TDbContext dbContext)
         {
-            this.appSettings = appSettings;
             this.DbContext = dbContext;
+            this.AppSettings = appSettings;
         }
 
-        protected void Read(Action<DbDataReader> action, string cmdText, params TParameter[] values)
+        protected T ExecuteScalar<T>(string cmdText, params TParameter[] values)
         {
-            var connection = Activator.CreateInstance(typeof(TConnection), this.appSettings.DefaultConnection) as TConnection;
+            TConnection connection = Activator.CreateInstance(typeof(TConnection), this.AppSettings.DefaultConnection) as TConnection;
             connection.Open();
 
-            var command = Activator.CreateInstance(typeof(TCommand), cmdText, connection) as TCommand;
+            TCommand command = Activator.CreateInstance(typeof(TCommand), cmdText, connection) as TCommand;
             if (values != null)
                 command.Parameters.AddRange(values);
 
-            DbDataReader dataReader = command.ExecuteReader();
+            var value = command.ExecuteScalar();
+            var result = (T)Convert.ChangeType(value, typeof(T));
+
+            command.Dispose();
+            connection.Close();
+            connection.Dispose();
+
+            return result;
+        }
+
+        protected void ExecuteReader(Action<DbDataReader> dataReaderAction, string cmdText, params TParameter[] values)
+        {
+            TConnection connection = Activator.CreateInstance(typeof(TConnection), this.AppSettings.DefaultConnection) as TConnection;
+            connection.Open();
+
+            TCommand command = Activator.CreateInstance(typeof(TCommand), cmdText, connection) as TCommand;
+            if (values != null)
+                command.Parameters.AddRange(values);
+
+            var dataReader = command.ExecuteReader();
             while (dataReader.Read())
-                action(dataReader);
+                dataReaderAction(dataReader);
 
             dataReader.Close();
             command.Dispose();
@@ -43,23 +63,23 @@ namespace Shengtai
             connection.Dispose();
         }
 
-        protected void ReadSingle(Action<DbDataReader> action, string cmdText, params TParameter[] values)
+        protected DataSet GetDataSet(string selectCommandText, params TParameter[] values)
         {
-            var connection = Activator.CreateInstance(typeof(TConnection), this.appSettings.DefaultConnection) as TConnection;
-            connection.Open();
+            TConnection selectConnection = Activator.CreateInstance(typeof(TConnection), this.AppSettings.DefaultConnection) as TConnection;
+            selectConnection.Open();
 
-            var command = Activator.CreateInstance(typeof(TCommand), cmdText, connection) as TCommand;
+            TDataAdapter dataAdapter = Activator.CreateInstance(typeof(TDataAdapter), selectCommandText, selectConnection) as TDataAdapter;
             if (values != null)
-                command.Parameters.AddRange(values);
+                dataAdapter.SelectCommand.Parameters.AddRange(values);
 
-            DbDataReader dataReader = command.ExecuteReader();
-            if (dataReader.Read())
-                action(dataReader);
+            DataSet dataSet = new DataSet();
+            dataAdapter.Fill(dataSet);
 
-            dataReader.Close();
-            command.Dispose();
-            connection.Close();
-            connection.Dispose();
+            dataAdapter.Dispose();
+            selectConnection.Close();
+            selectConnection.Dispose();
+
+            return dataSet;
         }
     }
 }

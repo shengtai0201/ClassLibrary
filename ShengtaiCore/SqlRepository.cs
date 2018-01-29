@@ -6,11 +6,9 @@ using System.Text;
 
 namespace Shengtai
 {
-    public abstract class SqlRepository<TContext> : Repository<SqlConnection, SqlCommand, SqlParameter, TContext>
+    public abstract class SqlRepository<TContext> : Repository<SqlConnection, SqlCommand, SqlParameter, SqlDataAdapter, TContext>
        where TContext : DbContext
     {
-        protected SqlRepository(TContext dbContext) : base(dbContext)
-        {
-        }
+        protected SqlRepository(IAppSettings appSettings, TContext dbContext) : base(appSettings, dbContext) { }
     }
 }
