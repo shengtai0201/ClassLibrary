@@ -2,7 +2,7 @@
 
 namespace Shengtai.Web.Telerik.Http
 {
-    public interface IApiService<TModel, TKey> : IController, IDisposable where TModel : class
+    public interface IApiService<TModel, TKey> : IService, IDisposable where TModel : class
     {
         DataSourceResponse<TModel> Read(DataSourceRequest request);
 

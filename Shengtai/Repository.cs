@@ -11,7 +11,7 @@ using System.Web.Mvc;
 
 namespace Shengtai
 {
-    public abstract class Repository<TConnection, TCommand, TParameter, TContext> : IController
+    public abstract class Repository<TConnection, TCommand, TParameter, TContext> : IService
         where TConnection : DbConnection, new()
         where TCommand : DbCommand, new()
         where TParameter : DbParameter, new()

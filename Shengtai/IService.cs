@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Shengtai
 {
-    public interface IController : ICurrentUser
+    public interface IService : ICurrentUser
     {
         IOwinContext OwinContext { set; }
     }
