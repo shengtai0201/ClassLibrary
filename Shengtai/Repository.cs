@@ -6,6 +6,7 @@ using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Configuration;
 using System.Web.Mvc;
 
@@ -39,6 +40,9 @@ namespace Shengtai
 
             //if (this.Logger == null)
             //    this.Logger = DependencyResolver.Current.GetService<ILogger>();
+
+            this.CurrentUser = System.Web.HttpContext.Current.User;
+            this.OwinContext = System.Web.HttpContext.Current.GetOwinContext();
         }
 
         //protected DataSet GetDataSet(string selectCommandText, params SqlParameter[] values)
