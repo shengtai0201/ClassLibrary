@@ -25,7 +25,7 @@ namespace Shengtai
         public IOwinContext OwinContext { protected get; set; }
 
         protected string connectionString;
-        protected Repository(TContext context = null)
+        protected Repository(TContext context = null, bool setService = false)
         {
             if (context == null)
                 this.DbContext = DependencyResolver.Current.GetService<TContext>();
@@ -38,12 +38,11 @@ namespace Shengtai
             //if (this.Logger == null)
             //    this.Logger = DependencyResolver.Current.GetService<ILogger>();
 
-            try
+            if (setService)
             {
                 this.CurrentUser = System.Web.HttpContext.Current.User;
                 this.OwinContext = System.Web.HttpContext.Current.GetOwinContext();
             }
-            catch { }
         }
 
         protected void ReadData(Action<DbDataReader> dataReaderAction, string cmdText, params TParameter[] values)

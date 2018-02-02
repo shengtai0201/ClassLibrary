@@ -11,7 +11,7 @@ namespace Shengtai
     public abstract class SqlRepository<TContext> : Repository<SqlConnection, SqlCommand, SqlParameter, TContext>
         where TContext : DbContext
     {
-        protected SqlRepository() : base(null) { }
-        protected SqlRepository(TContext context) : base(context) { }
+        protected SqlRepository() : base(null, true) { }
+        protected SqlRepository(TContext context, bool setService = false) : base(context, setService) { }
     }
 }
