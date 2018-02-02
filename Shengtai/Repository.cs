@@ -18,7 +18,6 @@ namespace Shengtai
         where TParameter : DbParameter, new()
         where TContext : DbContext
     {
-        //private readonly string connectionStringName;
         protected TContext DbContext { get; private set; }
         //protected ILogger Logger { get; private set; }
 
@@ -26,14 +25,12 @@ namespace Shengtai
         public IOwinContext OwinContext { protected get; set; }
 
         protected string connectionString;
-        //protected Repository(string connectionStringName)
-        protected Repository()
+        protected Repository(TContext context = null)
         {
-            //this.connectionStringName = connectionStringName;
-            //this.connectionString = string.Empty;
-
-            if (this.DbContext == null)
+            if (context == null)
                 this.DbContext = DependencyResolver.Current.GetService<TContext>();
+            else
+                this.DbContext = context;
 
             if (string.IsNullOrEmpty(this.connectionString) && this.DbContext != null)
                 this.connectionString = this.DbContext.Database.Connection.ConnectionString;
@@ -41,44 +38,24 @@ namespace Shengtai
             //if (this.Logger == null)
             //    this.Logger = DependencyResolver.Current.GetService<ILogger>();
 
-            this.CurrentUser = System.Web.HttpContext.Current.User;
-            this.OwinContext = System.Web.HttpContext.Current.GetOwinContext();
+            try
+            {
+                this.CurrentUser = System.Web.HttpContext.Current.User;
+                this.OwinContext = System.Web.HttpContext.Current.GetOwinContext();
+            }
+            catch { }
         }
 
-        //protected DataSet GetDataSet(string selectCommandText, params SqlParameter[] values)
-        //{
-        //    var selectConnection = new SqlConnection(this.ConnectionString);
-        //    selectConnection.Open();
-
-        //    var dataAdapter = new SqlDataAdapter(selectCommandText, selectConnection);
-
-        //    if (values != null)
-        //        dataAdapter.SelectCommand.Parameters.AddRange(values);
-
-        //    var dataSet = new DataSet();
-        //    dataAdapter.Fill(dataSet);
-
-        //    dataAdapter.Dispose();
-        //    selectConnection.Close();
-        //    selectConnection.Dispose();
-
-        //    return dataSet;
-        //}
-
-        //protected void ReadData(Action<SqlDataReader> dataReaderAction, string cmdText, params SqlParameter[] values)
         protected void ReadData(Action<DbDataReader> dataReaderAction, string cmdText, params TParameter[] values)
         {
-            //var selectConnection = new SqlConnection(this.ConnectionString);
             var selectConnection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
             selectConnection.Open();
 
-            //var command = new SqlCommand(cmdText, selectConnection);
             var command = Activator.CreateInstance(typeof(TCommand), cmdText, selectConnection) as TCommand;
 
             if (values != null)
                 command.Parameters.AddRange(values);
 
-            //SqlDataReader dataReader = command.ExecuteReader();
             DbDataReader dataReader = command.ExecuteReader();
             while (dataReader.Read())
                 dataReaderAction(dataReader);
@@ -89,20 +66,16 @@ namespace Shengtai
             selectConnection.Dispose();
         }
 
-        //protected void ReadDataSingle(Action<SqlDataReader> dataReaderAction, string cmdText, params SqlParameter[] values)
         protected void ReadDataSingle(Action<DbDataReader> dataReaderAction, string cmdText, params TParameter[] values)
         {
-            //var selectConnection = new SqlConnection(this.ConnectionString);
             var selectConnection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
             selectConnection.Open();
 
-            //var command = new SqlCommand(cmdText, selectConnection);
             var command = Activator.CreateInstance(typeof(TCommand), cmdText, selectConnection) as TCommand;
 
             if (values != null)
                 command.Parameters.AddRange(values);
 
-            //SqlDataReader dataReader = command.ExecuteReader();
             DbDataReader dataReader = command.ExecuteReader();
             if (dataReader.Read())
                 dataReaderAction(dataReader);
@@ -115,17 +88,14 @@ namespace Shengtai
 
         protected async Task ReadDataSingleAsync(Action<DbDataReader> dataReaderAction, string cmdText, params TParameter[] values)
         {
-            //var selectConnection = new SqlConnection(this.ConnectionString);
             var selectConnection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
             selectConnection.Open();
 
-            //var command = new SqlCommand(cmdText, selectConnection);
             var command = Activator.CreateInstance(typeof(TCommand), cmdText, selectConnection) as TCommand;
 
             if (values != null)
                 command.Parameters.AddRange(values);
 
-            //SqlDataReader dataReader = command.ExecuteReader();
             DbDataReader dataReader = await command.ExecuteReaderAsync();
             if (await dataReader.ReadAsync())
                 dataReaderAction(dataReader);
@@ -136,14 +106,11 @@ namespace Shengtai
             selectConnection.Dispose();
         }
 
-        //protected object ExecuteScalar(string cmdText, params SqlParameter[] values)
         protected virtual object ExecuteScalar(string cmdText, params TParameter[] values)
         {
-            //var selectConnection = new SqlConnection(this.ConnectionString);
             var selectConnection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
             selectConnection.Open();
 
-            //var command = new SqlCommand(cmdText, selectConnection);
             var command = Activator.CreateInstance(typeof(TCommand), cmdText, selectConnection) as TCommand;
 
             if (values != null)
@@ -158,14 +125,11 @@ namespace Shengtai
             return result;
         }
 
-        //protected async Task<object> ExecuteScalarAsync(string cmdText, params SqlParameter[] values)
         protected async Task<object> ExecuteScalarAsync(string cmdText, params TParameter[] values)
         {
-            //var selectConnection = new SqlConnection(this.ConnectionString);
             var selectConnection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
             selectConnection.Open();
 
-            //var command = new SqlCommand(cmdText, selectConnection);
             var command = Activator.CreateInstance(typeof(TCommand), cmdText, selectConnection) as TCommand;
 
             if (values != null)
@@ -180,14 +144,11 @@ namespace Shengtai
             return result;
         }
 
-        //protected int ExecuteNonQuery(string cmdText, params SqlParameter[] values)
         protected int ExecuteNonQuery(string cmdText, params TParameter[] values)
         {
-            //var selectConnection = new SqlConnection(this.ConnectionString);
             var selectConnection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
             selectConnection.Open();
 
-            //var command = new SqlCommand(cmdText, selectConnection);
             var command = Activator.CreateInstance(typeof(TCommand), cmdText, selectConnection) as TCommand;
 
             if (values != null)
@@ -250,16 +211,5 @@ namespace Shengtai
 
             return fullName.Substring(startIndex: 2, length: 1);
         }
-
-        //protected string ConnectionString
-        //{
-        //    get
-        //    {
-        //        if (string.IsNullOrEmpty(this.connectionString))
-        //            this.connectionString = WebConfigurationManager.ConnectionStrings[this.connectionStringName].ConnectionString;
-
-        //        return this.connectionString;
-        //    }
-        //}
     }
 }
