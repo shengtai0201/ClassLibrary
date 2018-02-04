@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shengtai
+namespace Shengtai.Options
 {
-    public interface IAppSettings
+    public interface IAppSettings<T> where T : IDefaultConnection
     {
-        string DefaultConnection { get; set; }
+        T ConnectionStrings { get; set; }
         string DateTimeOffsetFormat { get; set; }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using Shengtai.Options;
 using System;
 using System.Data;
 using System.Data.Common;
@@ -9,17 +11,18 @@ using System.Threading.Tasks;
 
 namespace Shengtai
 {
-    public abstract class Repository<TConnection, TCommand, TParameter, TDataAdapter, TDbContext>
+    public abstract class Repository<TConnection, TCommand, TParameter, TDataAdapter, TDbContext, TDefaultConnection>
         where TConnection : DbConnection, new()
         where TCommand : DbCommand, new()
         where TParameter : DbParameter, new()
         where TDataAdapter : DbDataAdapter, new()
         where TDbContext : DbContext
+        where TDefaultConnection : IDefaultConnection
     {
         protected TDbContext DbContext { get; private set; }
-        protected IAppSettings AppSettings { get; private set; }
+        protected IAppSettings<TDefaultConnection> AppSettings { get; private set; }
 
-        protected Repository(IAppSettings appSettings, TDbContext dbContext)
+        protected Repository(IAppSettings<TDefaultConnection> appSettings, TDbContext dbContext)
         {
             this.DbContext = dbContext;
             this.AppSettings = appSettings;
@@ -27,7 +30,7 @@ namespace Shengtai
 
         protected T ExecuteScalar<T>(string cmdText, params TParameter[] values)
         {
-            TConnection connection = Activator.CreateInstance(typeof(TConnection), this.AppSettings.DefaultConnection) as TConnection;
+            TConnection connection = Activator.CreateInstance(typeof(TConnection), this.AppSettings.ConnectionStrings.DefaultConnection) as TConnection;
             connection.Open();
 
             TCommand command = Activator.CreateInstance(typeof(TCommand), cmdText, connection) as TCommand;
@@ -46,7 +49,7 @@ namespace Shengtai
 
         protected void ExecuteReader(Action<DbDataReader> dataReaderAction, string cmdText, params TParameter[] values)
         {
-            TConnection connection = Activator.CreateInstance(typeof(TConnection), this.AppSettings.DefaultConnection) as TConnection;
+            TConnection connection = Activator.CreateInstance(typeof(TConnection), this.AppSettings.ConnectionStrings.DefaultConnection) as TConnection;
             connection.Open();
 
             TCommand command = Activator.CreateInstance(typeof(TCommand), cmdText, connection) as TCommand;
@@ -65,7 +68,7 @@ namespace Shengtai
 
         protected DataSet GetDataSet(string selectCommandText, params TParameter[] values)
         {
-            TConnection selectConnection = Activator.CreateInstance(typeof(TConnection), this.AppSettings.DefaultConnection) as TConnection;
+            TConnection selectConnection = Activator.CreateInstance(typeof(TConnection), this.AppSettings.ConnectionStrings.DefaultConnection) as TConnection;
             selectConnection.Open();
 
             TDataAdapter dataAdapter = Activator.CreateInstance(typeof(TDataAdapter), selectCommandText, selectConnection) as TDataAdapter;
