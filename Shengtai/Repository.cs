@@ -18,7 +18,7 @@ namespace Shengtai
         where TParameter : DbParameter, new()
         where TContext : DbContext
     {
-        protected TContext DbContext { get; private set; }
+        protected TContext DbContext { get; set; }
         //protected ILogger Logger { get; private set; }
 
         public IPrincipal CurrentUser { protected get; set; }
