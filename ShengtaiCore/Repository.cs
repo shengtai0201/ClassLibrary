@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Shengtai.Options;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
@@ -59,6 +60,28 @@ namespace Shengtai
             var dataReader = command.ExecuteReader();
             while (dataReader.Read())
                 dataReaderAction(dataReader);
+
+            dataReader.Close();
+            command.Dispose();
+            connection.Close();
+            connection.Dispose();
+        }
+
+        protected IEnumerable<T> ExecuteReader<T>(Func<DbDataReader, T> dataReaderFunc, string cmdText, params TParameter[] values)
+        {
+            TConnection connection = Activator.CreateInstance(typeof(TConnection), this.AppSettings.ConnectionStrings.DefaultConnection) as TConnection;
+            connection.Open();
+
+            TCommand command = Activator.CreateInstance(typeof(TCommand), cmdText, connection) as TCommand;
+            if (values != null)
+                command.Parameters.AddRange(values);
+
+            var dataReader = command.ExecuteReader();
+            while (dataReader.Read())
+            {
+                T data = dataReaderFunc(dataReader);
+                yield return data;
+            }
 
             dataReader.Close();
             command.Dispose();
