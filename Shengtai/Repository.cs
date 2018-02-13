@@ -1,5 +1,6 @@
 ﻿using Microsoft.Owin;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.Entity;
@@ -45,65 +46,106 @@ namespace Shengtai
             }
         }
 
-        protected void ReadData(Action<DbDataReader> dataReaderAction, string cmdText, params TParameter[] values)
+        protected void ExecuteReader(Action<DbDataReader> dataReaderAction, string cmdText, params TParameter[] values)
         {
-            var selectConnection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
-            selectConnection.Open();
+            TConnection connection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
+            connection.Open();
 
-            var command = Activator.CreateInstance(typeof(TCommand), cmdText, selectConnection) as TCommand;
-
+            TCommand command = Activator.CreateInstance(typeof(TCommand), cmdText, connection) as TCommand;
             if (values != null)
                 command.Parameters.AddRange(values);
 
-            DbDataReader dataReader = command.ExecuteReader();
+            var dataReader = command.ExecuteReader();
             while (dataReader.Read())
                 dataReaderAction(dataReader);
 
             dataReader.Close();
             command.Dispose();
-            selectConnection.Close();
-            selectConnection.Dispose();
+            connection.Close();
+            connection.Dispose();
         }
 
-        protected void ReadDataSingle(Action<DbDataReader> dataReaderAction, string cmdText, params TParameter[] values)
+        protected IEnumerable<T> ExecuteReader<T>(Func<DbDataReader, T> dataReaderFunc, string cmdText, params TParameter[] values)
         {
-            var selectConnection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
-            selectConnection.Open();
+            TConnection connection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
+            connection.Open();
 
-            var command = Activator.CreateInstance(typeof(TCommand), cmdText, selectConnection) as TCommand;
-
+            TCommand command = Activator.CreateInstance(typeof(TCommand), cmdText, connection) as TCommand;
             if (values != null)
                 command.Parameters.AddRange(values);
 
-            DbDataReader dataReader = command.ExecuteReader();
-            if (dataReader.Read())
-                dataReaderAction(dataReader);
+            var dataReader = command.ExecuteReader();
+            while (dataReader.Read())
+            {
+                T data = dataReaderFunc(dataReader);
+                yield return data;
+            }
 
             dataReader.Close();
             command.Dispose();
-            selectConnection.Close();
-            selectConnection.Dispose();
+            connection.Close();
+            connection.Dispose();
         }
 
-        protected async Task ReadDataSingleAsync(Action<DbDataReader> dataReaderAction, string cmdText, params TParameter[] values)
-        {
-            var selectConnection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
-            selectConnection.Open();
+        //protected void ReadData(Action<DbDataReader> dataReaderAction, string cmdText, params TParameter[] values)
+        //{
+        //    var selectConnection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
+        //    selectConnection.Open();
 
-            var command = Activator.CreateInstance(typeof(TCommand), cmdText, selectConnection) as TCommand;
+        //    var command = Activator.CreateInstance(typeof(TCommand), cmdText, selectConnection) as TCommand;
 
-            if (values != null)
-                command.Parameters.AddRange(values);
+        //    if (values != null)
+        //        command.Parameters.AddRange(values);
 
-            DbDataReader dataReader = await command.ExecuteReaderAsync();
-            if (await dataReader.ReadAsync())
-                dataReaderAction(dataReader);
+        //    DbDataReader dataReader = command.ExecuteReader();
+        //    while (dataReader.Read())
+        //        dataReaderAction(dataReader);
 
-            dataReader.Close();
-            command.Dispose();
-            selectConnection.Close();
-            selectConnection.Dispose();
-        }
+        //    dataReader.Close();
+        //    command.Dispose();
+        //    selectConnection.Close();
+        //    selectConnection.Dispose();
+        //}
+
+        //protected void ReadDataSingle(Action<DbDataReader> dataReaderAction, string cmdText, params TParameter[] values)
+        //{
+        //    var selectConnection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
+        //    selectConnection.Open();
+
+        //    var command = Activator.CreateInstance(typeof(TCommand), cmdText, selectConnection) as TCommand;
+
+        //    if (values != null)
+        //        command.Parameters.AddRange(values);
+
+        //    DbDataReader dataReader = command.ExecuteReader();
+        //    if (dataReader.Read())
+        //        dataReaderAction(dataReader);
+
+        //    dataReader.Close();
+        //    command.Dispose();
+        //    selectConnection.Close();
+        //    selectConnection.Dispose();
+        //}
+
+        //protected async Task ReadDataSingleAsync(Action<DbDataReader> dataReaderAction, string cmdText, params TParameter[] values)
+        //{
+        //    var selectConnection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
+        //    selectConnection.Open();
+
+        //    var command = Activator.CreateInstance(typeof(TCommand), cmdText, selectConnection) as TCommand;
+
+        //    if (values != null)
+        //        command.Parameters.AddRange(values);
+
+        //    DbDataReader dataReader = await command.ExecuteReaderAsync();
+        //    if (await dataReader.ReadAsync())
+        //        dataReaderAction(dataReader);
+
+        //    dataReader.Close();
+        //    command.Dispose();
+        //    selectConnection.Close();
+        //    selectConnection.Dispose();
+        //}
 
         protected virtual object ExecuteScalar(string cmdText, params TParameter[] values)
         {
