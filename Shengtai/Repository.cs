@@ -87,6 +87,29 @@ namespace Shengtai
             connection.Dispose();
         }
 
+        protected async Task<IList<T>> ExecuteReaderAsync<T>(Func<DbDataReader, T> dataReaderFunc, string cmdText, params TParameter[] values)
+        {
+            IList<T> result = new List<T>();
+
+            TConnection connection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
+            await connection.OpenAsync();
+
+            TCommand command = Activator.CreateInstance(typeof(TCommand), cmdText, connection) as TCommand;
+            if (values != null)
+                command.Parameters.AddRange(values);
+
+            var dataReader = await command.ExecuteReaderAsync();
+            while (await dataReader.ReadAsync())
+                result.Add(dataReaderFunc(dataReader));
+
+            dataReader.Close();
+            command.Dispose();
+            connection.Close();
+            connection.Dispose();
+
+            return result;
+        }
+
         //protected void ReadData(Action<DbDataReader> dataReaderAction, string cmdText, params TParameter[] values)
         //{
         //    var selectConnection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
@@ -196,6 +219,25 @@ namespace Shengtai
                 command.Parameters.AddRange(values);
 
             int result = command.ExecuteNonQuery();
+
+            command.Dispose();
+            selectConnection.Close();
+            selectConnection.Dispose();
+
+            return result;
+        }
+
+        protected async Task<int> ExecuteNonQueryAsync(string cmdText, params TParameter[] values)
+        {
+            var selectConnection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
+            await selectConnection.OpenAsync();
+
+            var command = Activator.CreateInstance(typeof(TCommand), cmdText, selectConnection) as TCommand;
+
+            if (values != null)
+                command.Parameters.AddRange(values);
+
+            int result = await command.ExecuteNonQueryAsync();
 
             command.Dispose();
             selectConnection.Close();

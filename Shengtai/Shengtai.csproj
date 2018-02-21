@@ -102,6 +102,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DefaultExtensions.cs" />
+    <Compile Include="ExclusiveSynchronizationContext.cs" />
     <Compile Include="IService.cs" />
     <Compile Include="ICurrentUser.cs" />
     <Compile Include="NpgsqlRepository.cs" />

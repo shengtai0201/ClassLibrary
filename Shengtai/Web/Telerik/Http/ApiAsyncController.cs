@@ -23,7 +23,7 @@ namespace Shengtai.Web.Telerik.Http
         [HttpGet]
         public async Task<DataSourceResponse<TModel>> Get([ModelBinder(typeof(DataSourceRequestModelBinder))]DataSourceRequest request)
         {
-            return await this.service.Read(request);
+            return await this.service.ReadAsync(request);
         }
 
         [HttpPost]
@@ -32,13 +32,13 @@ namespace Shengtai.Web.Telerik.Http
             if (!ModelState.IsValid)
                 return Request.CreateResponse<ModelStateDictionary>(HttpStatusCode.BadRequest, ModelState);
 
-            IList<TModel> responseValue = new List<TModel>();
-            bool result = await this.service.Create(model, responseValue);
+            var response = new DataSourceResponse<TModel> { DataCollection = new List<TModel> { model }, TotalRowCount = 1 };
+            bool result = await this.service.CreateAsync(model, response);
 
             if (result)
-                return Request.CreateResponse<TModel[]>(HttpStatusCode.Created, responseValue.ToArray());
+                return Request.CreateResponse<IDataSourceResponse<TModel>>(HttpStatusCode.Created, response);
             else
-                return Request.CreateResponse<ModelStateDictionary>(HttpStatusCode.InternalServerError, ModelState);
+                return Request.CreateResponse<IDataSourceResponse<TModel>>(HttpStatusCode.InternalServerError, response);
         }
 
         [HttpPut]
@@ -47,24 +47,24 @@ namespace Shengtai.Web.Telerik.Http
             if (!ModelState.IsValid)
                 return Request.CreateResponse<ModelStateDictionary>(HttpStatusCode.BadRequest, ModelState);
 
-            IList<TModel> responseValue = new List<TModel>();
-            bool? result = await this.service.Update(key, model, responseValue);
+            var response = new DataSourceResponse<TModel> { DataCollection = new List<TModel> { model }, TotalRowCount = 1 };
+            bool? result = await this.service.UpdateAsync(key, model, response);
 
             if (result == null)
-                return Request.CreateResponse<ModelStateDictionary>(HttpStatusCode.NotFound, ModelState);
+                return Request.CreateResponse<IDataSourceResponse<TModel>>(HttpStatusCode.NotFound, response);
             else
             {
                 if (result.Value)
-                    return Request.CreateResponse<TModel[]>(HttpStatusCode.OK, responseValue.ToArray());
+                    return Request.CreateResponse<IDataSourceResponse<TModel>>(HttpStatusCode.OK, response);
                 else
-                    return Request.CreateResponse<ModelStateDictionary>(HttpStatusCode.InternalServerError, ModelState);
+                    return Request.CreateResponse<IDataSourceResponse<TModel>>(HttpStatusCode.InternalServerError, response);
             }
         }
 
         [HttpDelete]
         public async Task<IHttpActionResult> Delete(TKey key)
         {
-            bool? result = await this.service.Destroy(key);
+            bool? result = await this.service.DestroyAsync(key);
 
             if (result == null)
                 return this.NotFound();

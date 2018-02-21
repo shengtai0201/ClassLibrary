@@ -3,6 +3,9 @@ using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Shengtai
 {
@@ -92,7 +95,7 @@ namespace Shengtai
             return molecular * 1.0 / denominator;
         }
 
-        public static IQueryable<TSource> Between<TSource, TKey>(this IQueryable<TSource> source, 
+        public static IQueryable<TSource> Between<TSource, TKey>(this IQueryable<TSource> source,
             Expression<Func<TSource, TKey>> keySelector, TKey low, TKey high) where TKey : IComparable<TKey>
         {
             Expression key = Expression.Invoke(keySelector, keySelector.Parameters.ToArray());
@@ -103,6 +106,52 @@ namespace Shengtai
             Expression<Func<TSource, bool>> lambda = Expression.Lambda<Func<TSource, bool>>(and, keySelector.Parameters);
 
             return source.Where(lambda);
+        }
+
+        public static void RunSync(Func<Task> item)
+        {
+            var oldContext = SynchronizationContext.Current;
+
+            var syncContext = new ExclusiveSynchronizationContext();
+            SynchronizationContext.SetSynchronizationContext(syncContext);
+            syncContext.Post(async _ =>
+            {
+                try
+                {
+                    await item();
+                }
+                finally
+                {
+                    syncContext.EndMessageLoop();
+                }
+            }, null);
+            syncContext.BeginMessageLoop();
+
+            SynchronizationContext.SetSynchronizationContext(oldContext);
+        }
+
+        public static T RunSync<T>(Func<Task<T>> item)
+        {
+            var oldContext = SynchronizationContext.Current;
+
+            var syncContext = new ExclusiveSynchronizationContext();
+            SynchronizationContext.SetSynchronizationContext(syncContext);
+            T result = default(T);
+            syncContext.Post(async _ =>
+            {
+                try
+                {
+                    result = await item();
+                }
+                finally
+                {
+                    syncContext.EndMessageLoop();
+                }
+            }, null);
+            syncContext.BeginMessageLoop();
+
+            SynchronizationContext.SetSynchronizationContext(oldContext);
+            return result;
         }
     }
 }

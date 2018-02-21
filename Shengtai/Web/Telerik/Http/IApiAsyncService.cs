@@ -6,12 +6,12 @@ namespace Shengtai.Web.Telerik.Http
 {
     public interface IApiAsyncService<TModel, TKey> : IService, IDisposable where TModel : class
     {
-        Task<DataSourceResponse<TModel>> Read(DataSourceRequest request);
+        Task<DataSourceResponse<TModel>> ReadAsync(DataSourceRequest request);
 
-        Task<bool> Create(TModel model, IList<TModel> responseValue);
+        Task<bool> CreateAsync(TModel model, IDataSourceError error);
 
-        Task<bool?> Update(TKey key, TModel model, IList<TModel> responseValue);
+        Task<bool?> UpdateAsync(TKey key, TModel model, IDataSourceError error);
 
-        Task<bool?> Destroy(TKey key);
+        Task<bool?> DestroyAsync(TKey key);
     }
 }
