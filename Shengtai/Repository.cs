@@ -65,6 +65,25 @@ namespace Shengtai
             connection.Dispose();
         }
 
+        protected void ExecuteReaderSingle(Action<DbDataReader> dataReaderAction, string cmdText, params TParameter[] values)
+        {
+            TConnection connection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
+            connection.Open();
+
+            TCommand command = Activator.CreateInstance(typeof(TCommand), cmdText, connection) as TCommand;
+            if (values != null)
+                command.Parameters.AddRange(values);
+
+            var dataReader = command.ExecuteReader();
+            if (dataReader.Read())
+                dataReaderAction(dataReader);
+
+            dataReader.Close();
+            command.Dispose();
+            connection.Close();
+            connection.Dispose();
+        }
+
         protected IEnumerable<T> ExecuteReader<T>(Func<DbDataReader, T> dataReaderFunc, string cmdText, params TParameter[] values)
         {
             TConnection connection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
