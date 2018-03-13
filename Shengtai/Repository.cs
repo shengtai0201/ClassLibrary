@@ -29,7 +29,15 @@ namespace Shengtai
         protected Repository(TContext context = null, bool setService = false)
         {
             if (context == null)
-                this.DbContext = DependencyResolver.Current.GetService<TContext>();
+            {
+                //if(IoC.Container != null)
+                //{
+
+                //}
+
+                if ((this.DbContext = IoC.Resolve<TContext>()) == null)
+                    this.DbContext = DependencyResolver.Current.GetService<TContext>();
+            }
             else
                 this.DbContext = context;
 
