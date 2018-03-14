@@ -30,11 +30,6 @@ namespace Shengtai
         {
             if (context == null)
             {
-                //if(IoC.Container != null)
-                //{
-
-                //}
-
                 if ((this.DbContext = IoC.Resolve<TContext>()) == null)
                     this.DbContext = DependencyResolver.Current.GetService<TContext>();
             }
@@ -52,6 +47,25 @@ namespace Shengtai
                 this.CurrentUser = System.Web.HttpContext.Current.User;
                 this.OwinContext = System.Web.HttpContext.Current.GetOwinContext();
             }
+        }
+
+        protected DataTable GetDataTable<T>(string selectCommandText, params TParameter[] values) where T: DbDataAdapter
+        {
+            TConnection connection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
+            connection.Open();
+
+            T dataAdapter = Activator.CreateInstance(typeof(T), selectCommandText, connection) as T;
+            if (values != null)
+                dataAdapter.SelectCommand.Parameters.AddRange(values);
+
+            DataTable dataTable = new DataTable();
+            dataAdapter.Fill(dataTable);
+
+            dataAdapter.Dispose();
+            connection.Close();
+            connection.Dispose();
+
+            return dataTable;
         }
 
         protected void ExecuteReader(Action<DbDataReader> dataReaderAction, string cmdText, params TParameter[] values)
