@@ -56,6 +56,11 @@ namespace Shengtai
             return keyValues;
         }
 
+        public static KeyValuePair<int, string> GetKeyValuePair(this Enum value)
+        {
+            return new KeyValuePair<int, string>();
+        }
+
         public static int? Plus(this int? leftValue, int? rightValue)
         {
             if (leftValue.HasValue)
