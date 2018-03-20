@@ -29,10 +29,31 @@ namespace Shengtai
 
         public static string GetEnumDescription<TEnum>(this string value) where TEnum : struct
         {
-            if (Enum.TryParse<TEnum>(value, out TEnum result))
+            if (Enum.TryParse(value, out TEnum result))
                 return GetEnumDescription(result as Enum);
 
             return null;
+        }
+
+        public static IList<KeyValuePair<int, string>> GetEnumDictionary<TEnum>(params Enum[] skipEnums) where TEnum : struct
+        {
+            IList<KeyValuePair<int, string>> keyValues = new List<KeyValuePair<int, string>>();
+
+            var values = Enum.GetValues(typeof(TEnum));
+            foreach (int key in values)
+            {
+                if (Enum.TryParse(key.ToString(), out TEnum result))
+                {
+                    var current = result as Enum;
+                    if (skipEnums.Contains(current))
+                        continue;
+                }
+
+                var value = key.GetEnumDescription<TEnum>();
+                keyValues.Add(new KeyValuePair<int, string>(key, value));
+            }
+
+            return keyValues;
         }
 
         public static int? Plus(this int? leftValue, int? rightValue)
