@@ -6,6 +6,11 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Microsoft.AspNet.Identity.Owin;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.Owin.Security;
+using System.Security.Claims;
 
 namespace Shengtai
 {
@@ -174,5 +179,106 @@ namespace Shengtai
             SynchronizationContext.SetSynchronizationContext(oldContext);
             return result;
         }
+
+        #region PasswordSignInAsync
+        private static async Task<TUser> FindByAccountAsync<TUser>(IAccountService<TUser> service, string account)
+            where TUser : IdentityUser
+        {
+            if (string.IsNullOrEmpty(account))
+                throw new ArgumentNullException("account");
+
+            string userId = await service.FindIdByAccountAsync(account);
+            var user = await service.UserManager.FindByIdAsync(userId);
+            return user;
+        }
+
+        public static async Task SignInAsync<TUser>(IAccountService<TUser> service, TUser user, bool isPersistent, 
+            bool rememberBrowser) where TUser : IdentityUser
+        {
+            var userIdentity = await service.UserManager.CreateIdentityAsync(user, "ApplicationCookie");
+            service.AuthenticationManager.SignOut(new string[2] { "ExternalCookie", "TwoFactorCookie" });
+            if (rememberBrowser)
+            {
+                ClaimsIdentity claimsIdentity = service.AuthenticationManager.CreateTwoFactorRememberBrowserIdentity(user.Id);
+                AuthenticationProperties properties = new AuthenticationProperties
+                {
+                    IsPersistent = isPersistent
+                };
+                service.AuthenticationManager.SignIn(properties, new ClaimsIdentity[2] { userIdentity, claimsIdentity });
+            }
+            else
+            {
+                AuthenticationProperties properties = new AuthenticationProperties
+                {
+                    IsPersistent = isPersistent
+                };
+                service.AuthenticationManager.SignIn(properties, new ClaimsIdentity[1] { userIdentity });
+            }
+        }
+
+        private static async Task<SignInStatus> SignInOrTwoFactor<TUser>(IAccountService<TUser> service, TUser user, bool isPersistent) 
+            where TUser : IdentityUser
+        {
+            var result = await service.UserManager.GetTwoFactorEnabledAsync(user.Id);
+            if (result)
+            {
+                var providers = await service.UserManager.GetValidTwoFactorProvidersAsync(user.Id);
+                if (providers.Count > 0)
+                {
+                    result = await service.AuthenticationManager.TwoFactorBrowserRememberedAsync(user.Id);
+                    if (result)
+                    {
+                        ClaimsIdentity claimsIdentity = new ClaimsIdentity("TwoFactorCookie");
+                        claimsIdentity.AddClaim(new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier", user.Id));
+                        service.AuthenticationManager.SignIn(new ClaimsIdentity[1] { claimsIdentity });
+
+                        return SignInStatus.RequiresVerification;
+                    }
+                }
+            }
+
+            await SignInAsync(service, user, isPersistent, false);
+            return SignInStatus.Success;
+        }
+
+        public static async Task<SignInStatus> PasswordSignInAsync<TUser>(this IAccountService<TUser> service, string account, 
+            string password, bool isPersistent, bool shouldLockout) where TUser : IdentityUser
+        {
+            if (service.UserManager == null)
+                return SignInStatus.Failure;
+
+            var user = await FindByAccountAsync(service, account);
+            if (user == null)
+                return SignInStatus.Failure;
+
+            bool result = await service.UserManager.IsLockedOutAsync(user.Id);
+            if (result)
+                return SignInStatus.LockedOut;
+
+            result = await service.UserManager.CheckPasswordAsync(user, password);
+            if (result)
+            {
+                var identityResult = await service.UserManager.ResetAccessFailedCountAsync(user.Id);
+                if (identityResult.Succeeded)
+                {
+                    var signInStatus = await SignInOrTwoFactor(service, user, isPersistent);
+                    return signInStatus;
+                }
+            }
+
+            if (shouldLockout)
+            {
+                var identityResult = await service.UserManager.AccessFailedAsync(user.Id);
+                if (identityResult.Succeeded)
+                {
+                    result = await service.UserManager.IsLockedOutAsync(user.Id);
+                    if (result)
+                        return SignInStatus.LockedOut;
+                }
+            }
+
+            return SignInStatus.Failure;
+        }
+        #endregion
     }
 }
