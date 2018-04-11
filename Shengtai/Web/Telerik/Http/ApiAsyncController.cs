@@ -21,7 +21,7 @@ namespace Shengtai.Web.Telerik.Http
         }
 
         [HttpGet]
-        public async Task<DataSourceResponse<TModel>> Get([ModelBinder(typeof(DataSourceRequestModelBinder))]DataSourceRequest request)
+        public async Task<IDataSourceResponse<TModel>> Get([ModelBinder(typeof(DataSourceRequestModelBinder))]DataSourceRequest request)
         {
             return await this.service.ReadAsync(request);
         }

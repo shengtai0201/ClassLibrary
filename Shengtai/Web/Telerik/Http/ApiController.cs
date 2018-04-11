@@ -19,7 +19,7 @@ namespace Shengtai.Web.Telerik.Http
         }
 
         [HttpGet]
-        public DataSourceResponse<TModel> Get([ModelBinder(typeof(DataSourceRequestModelBinder))]DataSourceRequest request)
+        public IDataSourceResponse<TModel> Get([ModelBinder(typeof(DataSourceRequestModelBinder))]DataSourceRequest request)
         {
             return this.service.Read(request);
         }

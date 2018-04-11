@@ -6,7 +6,7 @@ namespace Shengtai.Web.Telerik.Http
 {
     public interface IApiAsyncService<TModel, TKey> : IService, IDisposable where TModel : class
     {
-        Task<DataSourceResponse<TModel>> ReadAsync(DataSourceRequest request);
+        Task<IDataSourceResponse<TModel>> ReadAsync(DataSourceRequest request);
 
         Task<bool> CreateAsync(TModel model, IDataSourceError error);
 
