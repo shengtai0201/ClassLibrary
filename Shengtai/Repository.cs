@@ -1,4 +1,6 @@
-﻿using Microsoft.Owin;
+﻿using CommonServiceLocator;
+using Microsoft.Owin;
+using Shengtai.Web;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -26,11 +28,11 @@ namespace Shengtai
         public IOwinContext OwinContext { protected get; set; }
 
         protected string connectionString;
-        protected Repository(TContext context = null, bool setService = false)
+        protected Repository(TContext context, bool setService)
         {
             if (context == null)
             {
-                if ((this.DbContext = IoC.Resolve<TContext>()) == null)
+                if ((this.DbContext = ServiceLocator.Current.GetInstance<TContext>()) == null)
                     this.DbContext = DependencyResolver.Current.GetService<TContext>();
             }
             else

@@ -6,12 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shengtai
+namespace Shengtai.Windows
 {
     public abstract class NpgsqlRepository<TContext> : Repository<NpgsqlConnection, NpgsqlCommand, NpgsqlParameter, TContext>
         where TContext : DbContext
     {
-        protected NpgsqlRepository(bool setService) : base(null, setService) { }
-        protected NpgsqlRepository(TContext context, bool setService = false) : base(context, setService) { }
+        protected NpgsqlRepository(TContext context) : base(context, false) { }
     }
 }
