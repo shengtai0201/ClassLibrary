@@ -62,12 +62,6 @@ namespace Shengtai
             return keyValues;
         }
 
-        public static bool IsNumeric<T>(this T value) where T : struct
-        {
-            string s = value.ToString();
-            return double.TryParse(s, out double result);
-        }
-
         public static int? Plus(this int? leftValue, int? rightValue)
         {
             if (leftValue.HasValue)
