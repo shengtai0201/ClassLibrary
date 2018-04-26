@@ -28,7 +28,8 @@ namespace Shengtai
         public IOwinContext OwinContext { protected get; set; }
 
         protected string connectionString;
-        protected Repository(TContext context, bool setService)
+        //protected Repository(TContext context, bool setService)
+        protected Repository(TContext context)
         {
             if (context == null)
             {
@@ -44,11 +45,11 @@ namespace Shengtai
             //if (this.Logger == null)
             //    this.Logger = DependencyResolver.Current.GetService<ILogger>();
 
-            if (setService)
-            {
-                this.CurrentUser = System.Web.HttpContext.Current.User;
-                this.OwinContext = System.Web.HttpContext.Current.GetOwinContext();
-            }
+            //if (setService)
+            //{
+            //    this.CurrentUser = System.Web.HttpContext.Current.User;
+            //    this.OwinContext = System.Web.HttpContext.Current.GetOwinContext();
+            //}
         }
 
         protected DataTable GetDataTable<T>(string selectCommandText, params TParameter[] values) where T: DbDataAdapter

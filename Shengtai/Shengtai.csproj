@@ -131,6 +131,7 @@
     <Compile Include="DefaultExtensions.cs" />
     <Compile Include="ExclusiveSynchronizationContext.cs" />
     <Compile Include="Fraction.cs" />
+    <Compile Include="Web\CompositeValidationResult.cs" />
     <Compile Include="Web\IAccountService.cs" />
     <Compile Include="Web\IService.cs" />
     <Compile Include="Web\ICurrentUser.cs" />
@@ -156,6 +157,7 @@
     <Compile Include="Web\Telerik\Mvc\DataSourceRequestModelBinder.cs" />
     <Compile Include="Web\Telerik\ServerFilterInfo.cs" />
     <Compile Include="Web\Telerik\ServerPageInfo.cs" />
+    <Compile Include="Web\ValidateObjectAttribute.cs" />
     <Compile Include="Windows\NpgsqlRepository.cs" />
     <Compile Include="Windows\SqlRepository.cs" />
   </ItemGroup>
