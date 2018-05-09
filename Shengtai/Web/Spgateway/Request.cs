@@ -49,12 +49,17 @@ namespace Shengtai.Web.Spgateway
         [Required]
         public string Version { get; set; }// = "1.4";
 
-        public Request(RequestTrade trade, Crypto crypto)
+        public static Request NewInstance(RequestTrade trade, Crypto crypto)
         {
-            this.MerchantID = trade.MerchantID;
-            this.TradeInfo = crypto.GetTradeInfo(trade);
-            this.TradeSha = crypto.GetTradeSha(this.TradeInfo);
-            this.Version = "1.4";
+            var request = new Request
+            {
+                MerchantID = trade.MerchantID,
+                TradeInfo = crypto.GetTradeInfo(trade)
+            };
+            request.TradeSha = crypto.GetTradeSha(request.TradeInfo);
+            request.Version = "1.4";
+
+            return request;
         }
     }
 }

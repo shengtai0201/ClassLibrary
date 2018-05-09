@@ -326,12 +326,12 @@ namespace Shengtai.Web.Spgateway
         [StringLength(1)]
         public int? CVSCOM { get; set; }
 
-        public RequestTrade()
-        {
-            //this.Version = "1.4";
-            //this.LangType = "zh-tw";
-            //this.ExpireDate = DateTime.Now.AddDays(6).ToString("yyyyMMdd");
-            //this.EmailModify = 1;
-        }
+        //public RequestTrade()
+        //{
+        //    //this.Version = "1.4";
+        //    //this.LangType = "zh-tw";
+        //    //this.ExpireDate = DateTime.Now.AddDays(6).ToString("yyyyMMdd");
+        //    //this.EmailModify = 1;
+        //}
     }
 }
