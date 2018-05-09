@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shengtai
 {
@@ -12,29 +8,28 @@ namespace Shengtai
     /// 	FractionException
     /// </summary>
 
-
     /// Class name: Fraction
     /// Developed by: Syed Mehroz Alam
     /// Email: smehrozalam@yahoo.com
     /// URL: Programming Home "http://www.geocities.com/smehrozalam/"
     /// Version: 2.0
-    /// 
+    ///
     /// What's new in version 2.0:
     /// 	*	Changed Numerator and Denominator from Int32(integer) to Int64(long) for increased range
     /// 	*	renamed ConvertToString() to (overloaded) ToString()
     /// 	*	added the capability of detecting/raising overflow exceptions
     /// 	*	Fixed the bug that very small numbers e.g. 0.00000001 could not be converted to fraction
     /// 	*	Other minor bugs fixed
-    /// 
+    ///
     /// What's new in version 2.1
     /// 	*	overloaded user-defined conversions to/from Fractions
-    /// 	
-    /// 
+    ///
+    ///
     /// Properties:
     /// 	Numerator: Set/Get value for Numerator
     /// 	Denominator:  Set/Get value for Numerator
     /// 	Value:  Set an integer value for the fraction
-    /// 
+    ///
     /// Constructors:
     /// 	no arguments:	initializes fraction as 0/1
     /// 	(Numerator, Denominator): initializes fraction with the given numerator and denominator values
@@ -44,7 +39,7 @@ namespace Shengtai
     /// 	(string):	initializes fraction with the given string value
     /// 				the string can be an in the form of and integer, double or fraction.
     /// 				e.g it can be like "123" or "123.321" or "123/456"
-    /// 
+    ///
     /// Public Methods (Description is given with respective methods' definitions)
     /// 	(override) string ToString(Fraction)
     /// 	Fraction ToFraction(string)
@@ -56,28 +51,29 @@ namespace Shengtai
     /// 	ReduceFraction(Fraction)
     /// 	Equals(object)
     /// 	GetHashCode()
-    /// 
+    ///
     ///	Private Methods (Description is given with respective methods' definitions)
     /// 	Initialize(Numerator, Denominator)
     /// 	Fraction Negate(Fraction)
     /// 	Fraction Add(Fraction1, Fraction2)
-    /// 
+    ///
     /// Overloaded Operators (overloaded for Fractions, Integers and Doubles)
     /// 	Unary: -
-    /// 	Binary: +,-,*,/ 
+    /// 	Binary: +,-,*,/
     /// 	Relational and Logical Operators: ==,!=,<,>,<=,>=
-    /// 
+    ///
     /// Overloaded user-defined conversions
     /// 	Implicit:	From double/long/string to Fraction
     /// 	Explicit:	From Fraction to double/string
     /// </summary>
     public class Fraction
     {
+        private long m_iDenominator;
+
         /// <summary>
         /// Class attributes/members
         /// </summary>
-        long m_iNumerator;
-        long m_iDenominator;
+        private long m_iNumerator;
 
         /// <summary>
         /// Constructors
@@ -107,16 +103,6 @@ namespace Shengtai
         public Fraction(long iNumerator, long iDenominator)
         {
             Initialize(iNumerator, iDenominator);
-        }
-
-        /// <summary>
-        /// Internal function for constructors
-        /// </summary>
-        private void Initialize(long iNumerator, long iDenominator)
-        {
-            Numerator = iNumerator;
-            Denominator = iDenominator;
-            ReduceFraction(this);
         }
 
         /// <summary>
@@ -153,25 +139,168 @@ namespace Shengtai
         }
 
         /// <summary>
-        /// The function returns the current Fraction object as double
+        /// overloaed user defined conversions: from fractions to double and string
         /// </summary>
-        public double ToDouble()
+        public static explicit operator double(Fraction frac)
+        { return frac.ToDouble(); }
+
+        /// <summary>
+        /// overloaed user defined conversions: from numeric data types to Fractions
+        /// </summary>
+        public static implicit operator Fraction(long lNo)
+        { return new Fraction(lNo); }
+
+        public static implicit operator Fraction(double dNo)
+        { return new Fraction(dNo); }
+
+        public static implicit operator Fraction(string strNo)
+        { return new Fraction(strNo); }
+
+        public static implicit operator string(Fraction frac)
+        { return frac.ToString(); }
+
+        /// <summary>
+        /// The function returns the inverse of a Fraction object
+        /// </summary>
+        public static Fraction Inverse(Fraction frac1)
         {
-            return ((double)this.Numerator / this.Denominator);
+            if (frac1.Numerator == 0)
+                throw new FractionException("Operation not possible (Denominator cannot be assigned a ZERO Value)");
+
+            long iNumerator = frac1.Denominator;
+            long iDenominator = frac1.Numerator;
+            return (new Fraction(iNumerator, iDenominator));
         }
 
         /// <summary>
-        /// The function returns the current Fraction object as a string
+        /// Operators for the Fraction object
+        /// includes -(unary), and binary opertors such as +,-,*,/
+        /// also includes relational and logical operators such as ==,!=,<,>,<=,>=
         /// </summary>
-        public override string ToString()
+        public static Fraction operator -(Fraction frac1)
+        { return (Negate(frac1)); }
+
+        public static Fraction operator -(Fraction frac1, Fraction frac2)
+        { return (Add(frac1, -frac2)); }
+
+        public static Fraction operator -(int iNo, Fraction frac1)
+        { return (Add(-frac1, new Fraction(iNo))); }
+
+        public static Fraction operator -(Fraction frac1, int iNo)
+        { return (Add(frac1, -(new Fraction(iNo)))); }
+
+        public static Fraction operator -(double dbl, Fraction frac1)
+        { return (Add(-frac1, Fraction.ToFraction(dbl))); }
+
+        public static Fraction operator -(Fraction frac1, double dbl)
+        { return (Add(frac1, -Fraction.ToFraction(dbl))); }
+
+        public static bool operator !=(Fraction frac1, Fraction frac2)
+        { return (!frac1.Equals(frac2)); }
+
+        public static bool operator !=(Fraction frac1, int iNo)
+        { return (!frac1.Equals(new Fraction(iNo))); }
+
+        public static bool operator !=(Fraction frac1, double dbl)
+        { return (!frac1.Equals(new Fraction(dbl))); }
+
+        public static Fraction operator *(Fraction frac1, Fraction frac2)
+        { return (Multiply(frac1, frac2)); }
+
+        public static Fraction operator *(int iNo, Fraction frac1)
+        { return (Multiply(frac1, new Fraction(iNo))); }
+
+        public static Fraction operator *(Fraction frac1, int iNo)
+        { return (Multiply(frac1, new Fraction(iNo))); }
+
+        public static Fraction operator *(double dbl, Fraction frac1)
+        { return (Multiply(frac1, Fraction.ToFraction(dbl))); }
+
+        public static Fraction operator *(Fraction frac1, double dbl)
+        { return (Multiply(frac1, Fraction.ToFraction(dbl))); }
+
+        public static Fraction operator /(Fraction frac1, Fraction frac2)
+        { return (Multiply(frac1, Inverse(frac2))); }
+
+        public static Fraction operator /(int iNo, Fraction frac1)
+        { return (Multiply(Inverse(frac1), new Fraction(iNo))); }
+
+        public static Fraction operator /(Fraction frac1, int iNo)
+        { return (Multiply(frac1, Inverse(new Fraction(iNo)))); }
+
+        public static Fraction operator /(double dbl, Fraction frac1)
+        { return (Multiply(Inverse(frac1), Fraction.ToFraction(dbl))); }
+
+        public static Fraction operator /(Fraction frac1, double dbl)
+        { return (Multiply(frac1, Fraction.Inverse(Fraction.ToFraction(dbl)))); }
+
+        public static Fraction operator +(Fraction frac1, Fraction frac2)
+        { return (Add(frac1, frac2)); }
+
+        public static Fraction operator +(int iNo, Fraction frac1)
+        { return (Add(frac1, new Fraction(iNo))); }
+
+        public static Fraction operator +(Fraction frac1, int iNo)
+        { return (Add(frac1, new Fraction(iNo))); }
+
+        public static Fraction operator +(double dbl, Fraction frac1)
+        { return (Add(frac1, Fraction.ToFraction(dbl))); }
+
+        public static Fraction operator +(Fraction frac1, double dbl)
+        { return (Add(frac1, Fraction.ToFraction(dbl))); }
+
+        public static bool operator <(Fraction frac1, Fraction frac2)
+        { return frac1.Numerator * frac2.Denominator < frac2.Numerator * frac1.Denominator; }
+
+        public static bool operator <=(Fraction frac1, Fraction frac2)
+        { return frac1.Numerator * frac2.Denominator <= frac2.Numerator * frac1.Denominator; }
+
+        public static bool operator ==(Fraction frac1, Fraction frac2)
+        { return frac1.Equals(frac2); }
+
+        public static bool operator ==(Fraction frac1, int iNo)
+        { return frac1.Equals(new Fraction(iNo)); }
+
+        public static bool operator ==(Fraction frac1, double dbl)
+        { return frac1.Equals(new Fraction(dbl)); }
+
+        public static bool operator >(Fraction frac1, Fraction frac2)
+        { return frac1.Numerator * frac2.Denominator > frac2.Numerator * frac1.Denominator; }
+
+        public static bool operator >=(Fraction frac1, Fraction frac2)
+        { return frac1.Numerator * frac2.Denominator >= frac2.Numerator * frac1.Denominator; }
+
+        /// <summary>
+        /// The function reduces(simplifies) a Fraction object by dividing both its numerator
+        /// and denominator by their GCD
+        /// </summary>
+        public static void ReduceFraction(Fraction frac)
         {
-            string str;
-            if (this.Denominator == 1)
-                str = this.Numerator.ToString();
-            else
-                str = this.Numerator + "/" + this.Denominator;
-            return str;
+            try
+            {
+                if (frac.Numerator == 0)
+                {
+                    frac.Denominator = 1;
+                    return;
+                }
+
+                long iGCD = GCD(frac.Numerator, frac.Denominator);
+                frac.Numerator /= iGCD;
+                frac.Denominator /= iGCD;
+
+                if (frac.Denominator < 0)   // if -ve sign in denominator
+                {
+                    //pass -ve sign to numerator
+                    frac.Numerator *= -1;
+                    frac.Denominator *= -1;
+                }
+            } // end try
+            catch (Exception exp)
+            {
+                throw new FractionException("Cannot reduce Fraction: " + exp.Message);
+            }
         }
+
         /// <summary>
         /// The function takes an string as an argument and returns its corresponding reduced fraction
         /// the string can be an in the form of and integer, double or fraction.
@@ -195,9 +324,8 @@ namespace Shengtai
             return new Fraction(iNumerator, iDenominator);
         }
 
-
         /// <summary>
-        /// The function takes a floating point number as an argument 
+        /// The function takes a floating point number as an argument
         /// and returns its corresponding reduced fraction
         /// </summary>
         public static Fraction ToFraction(double dValue)
@@ -259,138 +387,6 @@ namespace Shengtai
         }
 
         /// <summary>
-        /// The function returns the inverse of a Fraction object
-        /// </summary>
-        public static Fraction Inverse(Fraction frac1)
-        {
-            if (frac1.Numerator == 0)
-                throw new FractionException("Operation not possible (Denominator cannot be assigned a ZERO Value)");
-
-            long iNumerator = frac1.Denominator;
-            long iDenominator = frac1.Numerator;
-            return (new Fraction(iNumerator, iDenominator));
-        }
-
-
-        /// <summary>
-        /// Operators for the Fraction object
-        /// includes -(unary), and binary opertors such as +,-,*,/
-        /// also includes relational and logical operators such as ==,!=,<,>,<=,>=
-        /// </summary>
-        public static Fraction operator -(Fraction frac1)
-        { return (Negate(frac1)); }
-
-        public static Fraction operator +(Fraction frac1, Fraction frac2)
-        { return (Add(frac1, frac2)); }
-
-        public static Fraction operator +(int iNo, Fraction frac1)
-        { return (Add(frac1, new Fraction(iNo))); }
-
-        public static Fraction operator +(Fraction frac1, int iNo)
-        { return (Add(frac1, new Fraction(iNo))); }
-
-        public static Fraction operator +(double dbl, Fraction frac1)
-        { return (Add(frac1, Fraction.ToFraction(dbl))); }
-
-        public static Fraction operator +(Fraction frac1, double dbl)
-        { return (Add(frac1, Fraction.ToFraction(dbl))); }
-
-        public static Fraction operator -(Fraction frac1, Fraction frac2)
-        { return (Add(frac1, -frac2)); }
-
-        public static Fraction operator -(int iNo, Fraction frac1)
-        { return (Add(-frac1, new Fraction(iNo))); }
-
-        public static Fraction operator -(Fraction frac1, int iNo)
-        { return (Add(frac1, -(new Fraction(iNo)))); }
-
-        public static Fraction operator -(double dbl, Fraction frac1)
-        { return (Add(-frac1, Fraction.ToFraction(dbl))); }
-
-        public static Fraction operator -(Fraction frac1, double dbl)
-        { return (Add(frac1, -Fraction.ToFraction(dbl))); }
-
-        public static Fraction operator *(Fraction frac1, Fraction frac2)
-        { return (Multiply(frac1, frac2)); }
-
-        public static Fraction operator *(int iNo, Fraction frac1)
-        { return (Multiply(frac1, new Fraction(iNo))); }
-
-        public static Fraction operator *(Fraction frac1, int iNo)
-        { return (Multiply(frac1, new Fraction(iNo))); }
-
-        public static Fraction operator *(double dbl, Fraction frac1)
-        { return (Multiply(frac1, Fraction.ToFraction(dbl))); }
-
-        public static Fraction operator *(Fraction frac1, double dbl)
-        { return (Multiply(frac1, Fraction.ToFraction(dbl))); }
-
-        public static Fraction operator /(Fraction frac1, Fraction frac2)
-        { return (Multiply(frac1, Inverse(frac2))); }
-
-        public static Fraction operator /(int iNo, Fraction frac1)
-        { return (Multiply(Inverse(frac1), new Fraction(iNo))); }
-
-        public static Fraction operator /(Fraction frac1, int iNo)
-        { return (Multiply(frac1, Inverse(new Fraction(iNo)))); }
-
-        public static Fraction operator /(double dbl, Fraction frac1)
-        { return (Multiply(Inverse(frac1), Fraction.ToFraction(dbl))); }
-
-        public static Fraction operator /(Fraction frac1, double dbl)
-        { return (Multiply(frac1, Fraction.Inverse(Fraction.ToFraction(dbl)))); }
-
-        public static bool operator ==(Fraction frac1, Fraction frac2)
-        { return frac1.Equals(frac2); }
-
-        public static bool operator !=(Fraction frac1, Fraction frac2)
-        { return (!frac1.Equals(frac2)); }
-
-        public static bool operator ==(Fraction frac1, int iNo)
-        { return frac1.Equals(new Fraction(iNo)); }
-
-        public static bool operator !=(Fraction frac1, int iNo)
-        { return (!frac1.Equals(new Fraction(iNo))); }
-
-        public static bool operator ==(Fraction frac1, double dbl)
-        { return frac1.Equals(new Fraction(dbl)); }
-
-        public static bool operator !=(Fraction frac1, double dbl)
-        { return (!frac1.Equals(new Fraction(dbl))); }
-
-        public static bool operator <(Fraction frac1, Fraction frac2)
-        { return frac1.Numerator * frac2.Denominator < frac2.Numerator * frac1.Denominator; }
-
-        public static bool operator >(Fraction frac1, Fraction frac2)
-        { return frac1.Numerator * frac2.Denominator > frac2.Numerator * frac1.Denominator; }
-
-        public static bool operator <=(Fraction frac1, Fraction frac2)
-        { return frac1.Numerator * frac2.Denominator <= frac2.Numerator * frac1.Denominator; }
-
-        public static bool operator >=(Fraction frac1, Fraction frac2)
-        { return frac1.Numerator * frac2.Denominator >= frac2.Numerator * frac1.Denominator; }
-
-
-        /// <summary>
-        /// overloaed user defined conversions: from numeric data types to Fractions
-        /// </summary>
-        public static implicit operator Fraction(long lNo)
-        { return new Fraction(lNo); }
-        public static implicit operator Fraction(double dNo)
-        { return new Fraction(dNo); }
-        public static implicit operator Fraction(string strNo)
-        { return new Fraction(strNo); }
-
-        /// <summary>
-        /// overloaed user defined conversions: from fractions to double and string
-        /// </summary>
-        public static explicit operator double(Fraction frac)
-        { return frac.ToDouble(); }
-
-        public static implicit operator string(Fraction frac)
-        { return frac.ToString(); }
-
-        /// <summary>
         /// checks whether two fractions are equal
         /// </summary>
         public override bool Equals(object obj)
@@ -408,14 +404,24 @@ namespace Shengtai
         }
 
         /// <summary>
-        /// internal function for negation
+        /// The function returns the current Fraction object as double
         /// </summary>
-        private static Fraction Negate(Fraction frac1)
+        public double ToDouble()
         {
-            long iNumerator = -frac1.Numerator;
-            long iDenominator = frac1.Denominator;
-            return (new Fraction(iNumerator, iDenominator));
+            return ((double)this.Numerator / this.Denominator);
+        }
 
+        /// <summary>
+        /// The function returns the current Fraction object as a string
+        /// </summary>
+        public override string ToString()
+        {
+            string str;
+            if (this.Denominator == 1)
+                str = this.Numerator.ToString();
+            else
+                str = this.Numerator + "/" + this.Denominator;
+            return str;
         }
 
         /// <summary>
@@ -428,27 +434,6 @@ namespace Shengtai
                 checked
                 {
                     long iNumerator = frac1.Numerator * frac2.Denominator + frac2.Numerator * frac1.Denominator;
-                    long iDenominator = frac1.Denominator * frac2.Denominator;
-                    return (new Fraction(iNumerator, iDenominator));
-                }
-            }
-            catch (OverflowException)
-            {
-                throw new FractionException("Overflow occurred while performing arithemetic operation");
-            }
-            catch (Exception)
-            {
-                throw new FractionException("An error occurred while performing arithemetic operation");
-            }
-        }
-
-        private static Fraction Multiply(Fraction frac1, Fraction frac2)
-        {
-            try
-            {
-                checked
-                {
-                    long iNumerator = frac1.Numerator * frac2.Numerator;
                     long iDenominator = frac1.Denominator * frac2.Denominator;
                     return (new Fraction(iNumerator, iDenominator));
                 }
@@ -485,39 +470,47 @@ namespace Shengtai
             return iNo2;
         }
 
-        /// <summary>
-        /// The function reduces(simplifies) a Fraction object by dividing both its numerator 
-        /// and denominator by their GCD
-        /// </summary>
-        public static void ReduceFraction(Fraction frac)
+        private static Fraction Multiply(Fraction frac1, Fraction frac2)
         {
             try
             {
-                if (frac.Numerator == 0)
+                checked
                 {
-                    frac.Denominator = 1;
-                    return;
+                    long iNumerator = frac1.Numerator * frac2.Numerator;
+                    long iDenominator = frac1.Denominator * frac2.Denominator;
+                    return (new Fraction(iNumerator, iDenominator));
                 }
-
-                long iGCD = GCD(frac.Numerator, frac.Denominator);
-                frac.Numerator /= iGCD;
-                frac.Denominator /= iGCD;
-
-                if (frac.Denominator < 0)   // if -ve sign in denominator
-                {
-                    //pass -ve sign to numerator
-                    frac.Numerator *= -1;
-                    frac.Denominator *= -1;
-                }
-            } // end try
-            catch (Exception exp)
+            }
+            catch (OverflowException)
             {
-                throw new FractionException("Cannot reduce Fraction: " + exp.Message);
+                throw new FractionException("Overflow occurred while performing arithemetic operation");
+            }
+            catch (Exception)
+            {
+                throw new FractionException("An error occurred while performing arithemetic operation");
             }
         }
 
-    }   //end class Fraction
+        /// <summary>
+        /// internal function for negation
+        /// </summary>
+        private static Fraction Negate(Fraction frac1)
+        {
+            long iNumerator = -frac1.Numerator;
+            long iDenominator = frac1.Denominator;
+            return (new Fraction(iNumerator, iDenominator));
+        }
 
+        /// <summary>
+        /// Internal function for constructors
+        /// </summary>
+        private void Initialize(long iNumerator, long iDenominator)
+        {
+            Numerator = iNumerator;
+            Denominator = iDenominator;
+            ReduceFraction(this);
+        }
+    }   //end class Fraction
 
     /// <summary>
     /// Exception class for Fraction, derived from System.Exception

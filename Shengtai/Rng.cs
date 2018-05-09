@@ -9,8 +9,8 @@ namespace Shengtai
     /// </summary>
     public static class Rng
     {
-        private static readonly RNGCryptoServiceProvider rngp = new RNGCryptoServiceProvider();
         private static readonly byte[] rb = new byte[4];
+        private static readonly RNGCryptoServiceProvider rngp = new RNGCryptoServiceProvider();
 
         /// <summary>
         /// 產生一個非負數的亂數
@@ -22,6 +22,7 @@ namespace Shengtai
             if (value < 0) value = -value;
             return value;
         }
+
         /// <summary>
         /// 產生一個非負數且最大值 max 以下的亂數
         /// </summary>
@@ -34,6 +35,7 @@ namespace Shengtai
             if (value < 0) value = -value;
             return value;
         }
+
         /// <summary>
         /// 產生一個非負數且最小值在 min 以上最大值在 max 以下的亂數
         /// </summary>

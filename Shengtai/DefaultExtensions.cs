@@ -1,22 +1,47 @@
-﻿using System;
+﻿using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.AspNet.Identity.Owin;
+using Microsoft.Owin.Security;
+using Shengtai.Web;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.Owin.Security;
-using System.Security.Claims;
-using Shengtai.Web;
 
 namespace Shengtai
 {
     public static class DefaultExtensions
     {
+        public static string ToUnixTimeStamp(this DateTime dateTime)
+        {
+            return ((int)dateTime.Subtract(new DateTime(1970, 1, 1)).TotalSeconds).ToString();
+        }
+
+        public static IQueryable<TSource> Between<TSource, TKey>(this IQueryable<TSource> source,
+            Expression<Func<TSource, TKey>> keySelector, TKey low, TKey high) where TKey : IComparable<TKey>
+        {
+            Expression key = Expression.Invoke(keySelector, keySelector.Parameters.ToArray());
+            Expression lowerBound = Expression.GreaterThanOrEqual(key, Expression.Constant(low));
+            Expression upperBound = Expression.LessThanOrEqual(key, Expression.Constant(high));
+
+            Expression and = Expression.AndAlso(lowerBound, upperBound);
+            Expression<Func<TSource, bool>> lambda = Expression.Lambda<Func<TSource, bool>>(and, keySelector.Parameters);
+
+            return source.Where(lambda);
+        }
+
+        public static double Division(this int molecular, int denominator)
+        {
+            if (molecular == 0 || denominator == 0)
+                return 0;
+
+            return molecular * 1.0 / denominator;
+        }
+
         public static string GetEnumDescription(this Enum value)
         {
             FieldInfo fi = value.GetType().GetField(value.ToString());
@@ -62,6 +87,24 @@ namespace Shengtai
             return keyValues;
         }
 
+        public static int? Minus(this int? leftValue, int? rightValue)
+        {
+            if (leftValue.HasValue)
+            {
+                if (rightValue.HasValue)
+                    return leftValue.Value - rightValue.Value;
+                else
+                    return leftValue.Value;
+            }
+            else
+            {
+                if (rightValue.HasValue)
+                    return 0 - rightValue.Value;
+                else
+                    return null;
+            }
+        }
+
         public static int? Plus(this int? leftValue, int? rightValue)
         {
             if (leftValue.HasValue)
@@ -94,45 +137,6 @@ namespace Shengtai
                 return leftValue + rightValue.Value;
             else
                 return leftValue;
-        }
-
-        public static int? Minus(this int? leftValue, int? rightValue)
-        {
-            if (leftValue.HasValue)
-            {
-                if (rightValue.HasValue)
-                    return leftValue.Value - rightValue.Value;
-                else
-                    return leftValue.Value;
-            }
-            else
-            {
-                if (rightValue.HasValue)
-                    return 0 - rightValue.Value;
-                else
-                    return null;
-            }
-        }
-
-        public static double Division(this int molecular, int denominator)
-        {
-            if (molecular == 0 || denominator == 0)
-                return 0;
-
-            return molecular * 1.0 / denominator;
-        }
-
-        public static IQueryable<TSource> Between<TSource, TKey>(this IQueryable<TSource> source,
-            Expression<Func<TSource, TKey>> keySelector, TKey low, TKey high) where TKey : IComparable<TKey>
-        {
-            Expression key = Expression.Invoke(keySelector, keySelector.Parameters.ToArray());
-            Expression lowerBound = Expression.GreaterThanOrEqual(key, Expression.Constant(low));
-            Expression upperBound = Expression.LessThanOrEqual(key, Expression.Constant(high));
-
-            Expression and = Expression.AndAlso(lowerBound, upperBound);
-            Expression<Func<TSource, bool>> lambda = Expression.Lambda<Func<TSource, bool>>(and, keySelector.Parameters);
-
-            return source.Where(lambda);
         }
 
         public static void RunSync(Func<Task> item)
@@ -182,67 +186,8 @@ namespace Shengtai
         }
 
         #region PasswordSignInAsync
-        private static async Task<TUser> FindByAccountAsync<TUser>(IAccountService<TUser> service, string account)
-            where TUser : IdentityUser
-        {
-            if (string.IsNullOrEmpty(account))
-                throw new ArgumentNullException("account");
 
-            string userId = await service.FindIdByAccountAsync(account);
-            var user = await service.UserManager.FindByIdAsync(userId);
-            return user;
-        }
-
-        public static async Task SignInAsync<TUser>(IAccountService<TUser> service, TUser user, bool isPersistent, 
-            bool rememberBrowser) where TUser : IdentityUser
-        {
-            var userIdentity = await service.UserManager.CreateIdentityAsync(user, "ApplicationCookie");
-            service.AuthenticationManager.SignOut(new string[2] { "ExternalCookie", "TwoFactorCookie" });
-            if (rememberBrowser)
-            {
-                ClaimsIdentity claimsIdentity = service.AuthenticationManager.CreateTwoFactorRememberBrowserIdentity(user.Id);
-                AuthenticationProperties properties = new AuthenticationProperties
-                {
-                    IsPersistent = isPersistent
-                };
-                service.AuthenticationManager.SignIn(properties, new ClaimsIdentity[2] { userIdentity, claimsIdentity });
-            }
-            else
-            {
-                AuthenticationProperties properties = new AuthenticationProperties
-                {
-                    IsPersistent = isPersistent
-                };
-                service.AuthenticationManager.SignIn(properties, new ClaimsIdentity[1] { userIdentity });
-            }
-        }
-
-        private static async Task<SignInStatus> SignInOrTwoFactor<TUser>(IAccountService<TUser> service, TUser user, bool isPersistent) 
-            where TUser : IdentityUser
-        {
-            var result = await service.UserManager.GetTwoFactorEnabledAsync(user.Id);
-            if (result)
-            {
-                var providers = await service.UserManager.GetValidTwoFactorProvidersAsync(user.Id);
-                if (providers.Count > 0)
-                {
-                    result = await service.AuthenticationManager.TwoFactorBrowserRememberedAsync(user.Id);
-                    if (result)
-                    {
-                        ClaimsIdentity claimsIdentity = new ClaimsIdentity("TwoFactorCookie");
-                        claimsIdentity.AddClaim(new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier", user.Id));
-                        service.AuthenticationManager.SignIn(new ClaimsIdentity[1] { claimsIdentity });
-
-                        return SignInStatus.RequiresVerification;
-                    }
-                }
-            }
-
-            await SignInAsync(service, user, isPersistent, false);
-            return SignInStatus.Success;
-        }
-
-        public static async Task<SignInStatus> PasswordSignInAsync<TUser>(this IAccountService<TUser> service, string account, 
+        public static async Task<SignInStatus> PasswordSignInAsync<TUser>(this IAccountService<TUser> service, string account,
             string password, bool isPersistent, bool shouldLockout) where TUser : IdentityUser
         {
             if (service.UserManager == null)
@@ -280,6 +225,67 @@ namespace Shengtai
 
             return SignInStatus.Failure;
         }
-        #endregion
+
+        public static async Task SignInAsync<TUser>(IAccountService<TUser> service, TUser user, bool isPersistent,
+            bool rememberBrowser) where TUser : IdentityUser
+        {
+            var userIdentity = await service.UserManager.CreateIdentityAsync(user, "ApplicationCookie");
+            service.AuthenticationManager.SignOut(new string[2] { "ExternalCookie", "TwoFactorCookie" });
+            if (rememberBrowser)
+            {
+                ClaimsIdentity claimsIdentity = service.AuthenticationManager.CreateTwoFactorRememberBrowserIdentity(user.Id);
+                AuthenticationProperties properties = new AuthenticationProperties
+                {
+                    IsPersistent = isPersistent
+                };
+                service.AuthenticationManager.SignIn(properties, new ClaimsIdentity[2] { userIdentity, claimsIdentity });
+            }
+            else
+            {
+                AuthenticationProperties properties = new AuthenticationProperties
+                {
+                    IsPersistent = isPersistent
+                };
+                service.AuthenticationManager.SignIn(properties, new ClaimsIdentity[1] { userIdentity });
+            }
+        }
+
+        private static async Task<TUser> FindByAccountAsync<TUser>(IAccountService<TUser> service, string account)
+                            where TUser : IdentityUser
+        {
+            if (string.IsNullOrEmpty(account))
+                throw new ArgumentNullException("account");
+
+            string userId = await service.FindIdByAccountAsync(account);
+            var user = await service.UserManager.FindByIdAsync(userId);
+            return user;
+        }
+
+        private static async Task<SignInStatus> SignInOrTwoFactor<TUser>(IAccountService<TUser> service, TUser user, bool isPersistent)
+            where TUser : IdentityUser
+        {
+            var result = await service.UserManager.GetTwoFactorEnabledAsync(user.Id);
+            if (result)
+            {
+                var providers = await service.UserManager.GetValidTwoFactorProvidersAsync(user.Id);
+                if (providers.Count > 0)
+                {
+                    result = await service.AuthenticationManager.TwoFactorBrowserRememberedAsync(user.Id);
+                    if (result)
+                    {
+                        ClaimsIdentity claimsIdentity = new ClaimsIdentity("TwoFactorCookie");
+                        claimsIdentity.AddClaim(new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier", user.Id));
+                        service.AuthenticationManager.SignIn(new ClaimsIdentity[1] { claimsIdentity });
+
+                        return SignInStatus.RequiresVerification;
+                    }
+                }
+            }
+
+            await SignInAsync(service, user, isPersistent, false);
+            return SignInStatus.Success;
+        }
+
+        #endregion PasswordSignInAsync
     }
 }

@@ -6,11 +6,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.Entity;
-using System.Data.SqlClient;
 using System.Security.Principal;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Configuration;
 using System.Web.Mvc;
 
 namespace Shengtai
@@ -21,13 +18,8 @@ namespace Shengtai
         where TParameter : DbParameter, new()
         where TContext : DbContext
     {
-        protected TContext DbContext { get; set; }
-        //protected ILogger Logger { get; private set; }
-
-        public IPrincipal CurrentUser { protected get; set; }
-        public IOwinContext OwinContext { protected get; set; }
-
         protected string connectionString;
+
         //protected Repository(TContext context, bool setService)
         protected Repository(TContext context)
         {
@@ -52,23 +44,89 @@ namespace Shengtai
             //}
         }
 
-        protected DataTable GetDataTable<T>(string selectCommandText, params TParameter[] values) where T: DbDataAdapter
+        public IPrincipal CurrentUser { protected get; set; }
+
+        //protected ILogger Logger { get; private set; }
+        public IOwinContext OwinContext { protected get; set; }
+
+        protected TContext DbContext { get; set; }
+
+        protected bool ConvertToBoolean(object value)
         {
-            TConnection connection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
-            connection.Open();
+            if (value == DBNull.Value)
+                return false;
 
-            T dataAdapter = Activator.CreateInstance(typeof(T), selectCommandText, connection) as T;
+            return Convert.ToBoolean(value);
+        }
+
+        protected int ConvertToInt(object value)
+        {
+            if (value == DBNull.Value)
+                return 0;
+
+            return Convert.ToInt32(value);
+        }
+
+        protected bool? DbToBoolean(object value)
+        {
+            if (value == DBNull.Value)
+                return null;
+            else
+                return Convert.ToBoolean(value);
+        }
+
+        protected string DbToEnumDescription<TEnum>(object value) where TEnum : struct
+        {
+            if (value == DBNull.Value)
+                return null;
+            else
+                return value.ToString().GetEnumDescription<TEnum>();
+        }
+
+        protected string DbToString(object value)
+        {
+            if (value == DBNull.Value)
+                return null;
+            else
+                return value.ToString();
+        }
+
+        protected int ExecuteNonQuery(string cmdText, params TParameter[] values)
+        {
+            var selectConnection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
+            selectConnection.Open();
+
+            var command = Activator.CreateInstance(typeof(TCommand), cmdText, selectConnection) as TCommand;
+
             if (values != null)
-                dataAdapter.SelectCommand.Parameters.AddRange(values);
+                command.Parameters.AddRange(values);
 
-            DataTable dataTable = new DataTable();
-            dataAdapter.Fill(dataTable);
+            int result = command.ExecuteNonQuery();
 
-            dataAdapter.Dispose();
-            connection.Close();
-            connection.Dispose();
+            command.Dispose();
+            selectConnection.Close();
+            selectConnection.Dispose();
 
-            return dataTable;
+            return result;
+        }
+
+        protected async Task<int> ExecuteNonQueryAsync(string cmdText, params TParameter[] values)
+        {
+            var selectConnection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
+            await selectConnection.OpenAsync();
+
+            var command = Activator.CreateInstance(typeof(TCommand), cmdText, selectConnection) as TCommand;
+
+            if (values != null)
+                command.Parameters.AddRange(values);
+
+            int result = await command.ExecuteNonQueryAsync();
+
+            command.Dispose();
+            selectConnection.Close();
+            selectConnection.Dispose();
+
+            return result;
         }
 
         protected void ExecuteReader(Action<DbDataReader> dataReaderAction, string cmdText, params TParameter[] values)
@@ -82,25 +140,6 @@ namespace Shengtai
 
             var dataReader = command.ExecuteReader();
             while (dataReader.Read())
-                dataReaderAction(dataReader);
-
-            dataReader.Close();
-            command.Dispose();
-            connection.Close();
-            connection.Dispose();
-        }
-
-        protected void ExecuteReaderSingle(Action<DbDataReader> dataReaderAction, string cmdText, params TParameter[] values)
-        {
-            TConnection connection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
-            connection.Open();
-
-            TCommand command = Activator.CreateInstance(typeof(TCommand), cmdText, connection) as TCommand;
-            if (values != null)
-                command.Parameters.AddRange(values);
-
-            var dataReader = command.ExecuteReader();
-            if (dataReader.Read())
                 dataReaderAction(dataReader);
 
             dataReader.Close();
@@ -152,6 +191,87 @@ namespace Shengtai
             connection.Dispose();
 
             return result;
+        }
+
+        protected void ExecuteReaderSingle(Action<DbDataReader> dataReaderAction, string cmdText, params TParameter[] values)
+        {
+            TConnection connection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
+            connection.Open();
+
+            TCommand command = Activator.CreateInstance(typeof(TCommand), cmdText, connection) as TCommand;
+            if (values != null)
+                command.Parameters.AddRange(values);
+
+            var dataReader = command.ExecuteReader();
+            if (dataReader.Read())
+                dataReaderAction(dataReader);
+
+            dataReader.Close();
+            command.Dispose();
+            connection.Close();
+            connection.Dispose();
+        }
+
+        protected virtual object ExecuteScalar(string cmdText, params TParameter[] values)
+        {
+            var selectConnection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
+            selectConnection.Open();
+
+            var command = Activator.CreateInstance(typeof(TCommand), cmdText, selectConnection) as TCommand;
+
+            if (values != null)
+                command.Parameters.AddRange(values);
+
+            object result = command.ExecuteScalar();
+
+            command.Dispose();
+            selectConnection.Close();
+            selectConnection.Dispose();
+
+            return result;
+        }
+
+        //    dataReader.Close();
+        //    command.Dispose();
+        //    selectConnection.Close();
+        //    selectConnection.Dispose();
+        //}
+        protected async Task<object> ExecuteScalarAsync(string cmdText, params TParameter[] values)
+        {
+            var selectConnection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
+            selectConnection.Open();
+
+            var command = Activator.CreateInstance(typeof(TCommand), cmdText, selectConnection) as TCommand;
+
+            if (values != null)
+                command.Parameters.AddRange(values);
+
+            object result = await command.ExecuteScalarAsync();
+
+            command.Dispose();
+            selectConnection.Close();
+            selectConnection.Dispose();
+
+            return result;
+        }
+
+        protected DataTable GetDataTable<T>(string selectCommandText, params TParameter[] values) where T : DbDataAdapter
+        {
+            TConnection connection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
+            connection.Open();
+
+            T dataAdapter = Activator.CreateInstance(typeof(T), selectCommandText, connection) as T;
+            if (values != null)
+                dataAdapter.SelectCommand.Parameters.AddRange(values);
+
+            DataTable dataTable = new DataTable();
+            dataAdapter.Fill(dataTable);
+
+            dataAdapter.Dispose();
+            connection.Close();
+            connection.Dispose();
+
+            return dataTable;
         }
 
         //protected void ReadData(Action<DbDataReader> dataReaderAction, string cmdText, params TParameter[] values)
@@ -207,129 +327,6 @@ namespace Shengtai
         //    DbDataReader dataReader = await command.ExecuteReaderAsync();
         //    if (await dataReader.ReadAsync())
         //        dataReaderAction(dataReader);
-
-        //    dataReader.Close();
-        //    command.Dispose();
-        //    selectConnection.Close();
-        //    selectConnection.Dispose();
-        //}
-
-        protected virtual object ExecuteScalar(string cmdText, params TParameter[] values)
-        {
-            var selectConnection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
-            selectConnection.Open();
-
-            var command = Activator.CreateInstance(typeof(TCommand), cmdText, selectConnection) as TCommand;
-
-            if (values != null)
-                command.Parameters.AddRange(values);
-
-            object result = command.ExecuteScalar();
-
-            command.Dispose();
-            selectConnection.Close();
-            selectConnection.Dispose();
-
-            return result;
-        }
-
-        protected async Task<object> ExecuteScalarAsync(string cmdText, params TParameter[] values)
-        {
-            var selectConnection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
-            selectConnection.Open();
-
-            var command = Activator.CreateInstance(typeof(TCommand), cmdText, selectConnection) as TCommand;
-
-            if (values != null)
-                command.Parameters.AddRange(values);
-
-            object result = await command.ExecuteScalarAsync();
-
-            command.Dispose();
-            selectConnection.Close();
-            selectConnection.Dispose();
-
-            return result;
-        }
-
-        protected int ExecuteNonQuery(string cmdText, params TParameter[] values)
-        {
-            var selectConnection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
-            selectConnection.Open();
-
-            var command = Activator.CreateInstance(typeof(TCommand), cmdText, selectConnection) as TCommand;
-
-            if (values != null)
-                command.Parameters.AddRange(values);
-
-            int result = command.ExecuteNonQuery();
-
-            command.Dispose();
-            selectConnection.Close();
-            selectConnection.Dispose();
-
-            return result;
-        }
-
-        protected async Task<int> ExecuteNonQueryAsync(string cmdText, params TParameter[] values)
-        {
-            var selectConnection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;
-            await selectConnection.OpenAsync();
-
-            var command = Activator.CreateInstance(typeof(TCommand), cmdText, selectConnection) as TCommand;
-
-            if (values != null)
-                command.Parameters.AddRange(values);
-
-            int result = await command.ExecuteNonQueryAsync();
-
-            command.Dispose();
-            selectConnection.Close();
-            selectConnection.Dispose();
-
-            return result;
-        }
-
-        protected int ConvertToInt(object value)
-        {
-            if (value == DBNull.Value)
-                return 0;
-
-            return Convert.ToInt32(value);
-        }
-
-        protected bool ConvertToBoolean(object value)
-        {
-            if (value == DBNull.Value)
-                return false;
-
-            return Convert.ToBoolean(value);
-        }
-
-        protected string DbToString(object value)
-        {
-            if (value == DBNull.Value)
-                return null;
-            else
-                return value.ToString();
-        }
-
-        protected bool? DbToBoolean(object value)
-        {
-            if (value == DBNull.Value)
-                return null;
-            else
-                return Convert.ToBoolean(value);
-        }
-
-        protected string DbToEnumDescription<TEnum>(object value) where TEnum : struct
-        {
-            if (value == DBNull.Value)
-                return null;
-            else
-                return value.ToString().GetEnumDescription<TEnum>();
-        }
-
         protected string GetDayOfWeekName(DateTime dateTime)
         {
             var provider = new System.Globalization.CultureInfo(name: "zh-TW");

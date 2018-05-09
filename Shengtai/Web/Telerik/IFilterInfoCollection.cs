@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+
 namespace Shengtai.Web.Telerik
 {
     public interface IFilterInfoCollection

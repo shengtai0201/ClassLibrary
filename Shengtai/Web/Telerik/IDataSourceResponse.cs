@@ -6,8 +6,7 @@ namespace Shengtai.Web.Telerik
     {
         ICollection<TModel> DataCollection { get; }
 
-        int TotalRowCount { get; }
-
         string ErrorMessage { get; }
+        int TotalRowCount { get; }
     }
 }

@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shengtai.Web
 {
@@ -15,9 +11,9 @@ namespace Shengtai.Web
             var results = new List<ValidationResult>();
 
             Validator.TryValidateObject(value, context, results, true);
-            if(results.Count != 0)
+            if (results.Count != 0)
             {
-                var compositeResults = new CompositeValidationResult(string.Format("Validation for {0} failed!", 
+                var compositeResults = new CompositeValidationResult(string.Format("Validation for {0} failed!",
                     validationContext.DisplayName));
                 results.ForEach(compositeResults.AddResult);
 

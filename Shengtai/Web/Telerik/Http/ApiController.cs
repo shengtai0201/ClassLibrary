@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.ModelBinding;
-using System.Web;
 
 namespace Shengtai.Web.Telerik.Http
 {
@@ -16,6 +16,22 @@ namespace Shengtai.Web.Telerik.Http
             this.service = service;
             this.service.CurrentUser = this.User;
             this.service.OwinContext = HttpContext.Current.GetOwinContext();
+        }
+
+        [HttpDelete]
+        public IHttpActionResult Delete(TKey key)
+        {
+            bool? result = this.service.Destroy(key);
+
+            if (result == null)
+                return this.NotFound();
+            else
+            {
+                if (result.Value)
+                    return this.StatusCode(HttpStatusCode.NoContent);
+                else
+                    return this.InternalServerError();
+            }
         }
 
         [HttpGet]
@@ -56,22 +72,6 @@ namespace Shengtai.Web.Telerik.Http
                     return Request.CreateResponse<IDataSourceResponse<TModel>>(HttpStatusCode.OK, response);
                 else
                     return Request.CreateResponse<IDataSourceResponse<TModel>>(HttpStatusCode.InternalServerError, response);
-            }
-        }
-
-        [HttpDelete]
-        public IHttpActionResult Delete(TKey key)
-        {
-            bool? result = this.service.Destroy(key);
-
-            if (result == null)
-                return this.NotFound();
-            else
-            {
-                if (result.Value)
-                    return this.StatusCode(HttpStatusCode.NoContent);
-                else
-                    return this.InternalServerError();
             }
         }
 

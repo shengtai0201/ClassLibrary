@@ -6,6 +6,32 @@ namespace Shengtai.Web.Telerik.Http
 {
     public class DataSourceRequestModelBinder : ModelBinderBase, IModelBinder
     {
+        public bool BindModel(HttpActionContext actionContext, ModelBindingContext bindingContext)
+        {
+            if (bindingContext == null)
+                throw new ArgumentNullException();
+
+            if (bindingContext.ModelType != typeof(DataSourceRequest))
+                return false;
+
+            DataSourceRequest request = new DataSourceRequest();
+            request.ServerPaging = this.GetServerPaging(bindingContext);
+
+            var logic = bindingContext.ValueProvider.GetValue("filter.logic");
+            if (logic != null)
+            {
+                var filterInfoCollection = new ServerFilterInfo { Logic = this.ParseLogic(logic.AttemptedValue) };
+                this.SetServerFiltering(bindingContext, filterInfoCollection, "filter.filters[{0}]", 0);
+
+                if (filterInfoCollection.FilterCollection.Count > 0)
+                    request.ServerFiltering = filterInfoCollection;
+            }
+
+            bindingContext.Model = request;
+
+            return true;
+        }
+
         private ServerPageInfo GetServerPaging(ModelBindingContext bindingContext)
         {
             var skip = bindingContext.ValueProvider.GetValue("skip");
@@ -59,32 +85,6 @@ namespace Shengtai.Web.Telerik.Http
             }
 
             return filterInfoCollection;
-        }
-
-        public bool BindModel(HttpActionContext actionContext, ModelBindingContext bindingContext)
-        {
-            if (bindingContext == null)
-                throw new ArgumentNullException();
-
-            if (bindingContext.ModelType != typeof(DataSourceRequest))
-                return false;
-
-            DataSourceRequest request = new DataSourceRequest();
-            request.ServerPaging = this.GetServerPaging(bindingContext);
-
-            var logic = bindingContext.ValueProvider.GetValue("filter.logic");
-            if (logic != null)
-            {
-                var filterInfoCollection = new ServerFilterInfo { Logic = this.ParseLogic(logic.AttemptedValue) };
-                this.SetServerFiltering(bindingContext, filterInfoCollection, "filter.filters[{0}]", 0);
-
-                if (filterInfoCollection.FilterCollection.Count > 0)
-                    request.ServerFiltering = filterInfoCollection;
-            }
-
-            bindingContext.Model = request;
-
-            return true;
         }
     }
 }

@@ -5,9 +5,13 @@ namespace Shengtai.Web.Telerik
 {
     public class DataSourceResponse<TModel> : IDataSourceResponse<TModel>, IDataSourceError where TModel : class
     {
-        public ICollection<TModel> DataCollection { get; set; }
+        public DataSourceResponse()
+        {
+            this.Error = new StringBuilder();
+            this.DataCollection = new List<TModel>();
+        }
 
-        public int TotalRowCount { get; set; }
+        public ICollection<TModel> DataCollection { get; set; }
 
         public StringBuilder Error { get; set; }
 
@@ -19,10 +23,6 @@ namespace Shengtai.Web.Telerik
             }
         }
 
-        public DataSourceResponse()
-        {
-            this.Error = new StringBuilder();
-            this.DataCollection = new List<TModel>();
-        }
+        public int TotalRowCount { get; set; }
     }
 }

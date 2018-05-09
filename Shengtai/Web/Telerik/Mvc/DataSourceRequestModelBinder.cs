@@ -5,6 +5,27 @@ namespace Shengtai.Web.Telerik.Mvc
 {
     public class DataSourceRequestModelBinder : ModelBinderBase, IModelBinder
     {
+        public object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext)
+        {
+            if (bindingContext == null)
+                throw new ArgumentNullException();
+
+            DataSourceRequest request = new DataSourceRequest();
+            request.ServerPaging = this.GetServerPaging(bindingContext);
+
+            var logic = bindingContext.ValueProvider.GetValue("filter[logic]");
+            if (logic != null)
+            {
+                var filterInfoCollection = new ServerFilterInfo { Logic = this.ParseLogic(logic.AttemptedValue) };
+                this.SetServerFiltering(bindingContext, filterInfoCollection, "filter[filters][{0}]", 0);
+
+                if (filterInfoCollection.FilterCollection.Count > 0)
+                    request.ServerFiltering = filterInfoCollection;
+            }
+
+            return request;
+        }
+
         private ServerPageInfo GetServerPaging(ModelBindingContext bindingContext)
         {
             var skip = bindingContext.ValueProvider.GetValue("skip");
@@ -58,27 +79,6 @@ namespace Shengtai.Web.Telerik.Mvc
             }
 
             return filterInfoCollection;
-        }
-
-        public object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext)
-        {
-            if (bindingContext == null)
-                throw new ArgumentNullException();
-
-            DataSourceRequest request = new DataSourceRequest();
-            request.ServerPaging = this.GetServerPaging(bindingContext);
-
-            var logic = bindingContext.ValueProvider.GetValue("filter[logic]");
-            if (logic != null)
-            {
-                var filterInfoCollection = new ServerFilterInfo { Logic = this.ParseLogic(logic.AttemptedValue) };
-                this.SetServerFiltering(bindingContext, filterInfoCollection, "filter[filters][{0}]", 0);
-
-                if (filterInfoCollection.FilterCollection.Count > 0)
-                    request.ServerFiltering = filterInfoCollection;
-            }
-
-            return request;
         }
     }
 }
