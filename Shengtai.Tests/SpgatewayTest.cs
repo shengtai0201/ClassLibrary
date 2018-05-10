@@ -77,6 +77,8 @@ namespace Shengtai.Tests
             Assert.AreEqual(expected, actual);
         }
 
+        public void Get
+
         [Test]
         public void AAA()
         {

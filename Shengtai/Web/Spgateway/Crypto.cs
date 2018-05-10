@@ -32,7 +32,7 @@ namespace Shengtai.Web.Spgateway
             return dst;
         }
 
-        private string ByteArrayToHex(byte[] bytes)
+        private string ByteArrayToHexString(byte[] bytes)
         {
             char[] c = new char[bytes.Length * 2];
 
@@ -60,7 +60,6 @@ namespace Shengtai.Web.Spgateway
             var s = string.Join("&", properties.Select(x => x.Key + "=" + x.Value));
             var inputBuffer = this.AddPKCS7Padding(Encoding.UTF8.GetBytes(s), 32);
 
-            var builder = new StringBuilder();
             var aes = new RijndaelManaged
             {
                 Key = Encoding.UTF8.GetBytes(this.key),
@@ -70,7 +69,7 @@ namespace Shengtai.Web.Spgateway
             };
 
             var bytes = aes.CreateEncryptor().TransformFinalBlock(inputBuffer, 0, inputBuffer.Length);
-            return this.ByteArrayToHex(bytes).ToLower();
+            return this.ByteArrayToHexString(bytes).ToLower();
         }
 
         public string GetTradeSha(string tradeInfo)
@@ -86,6 +85,54 @@ namespace Shengtai.Web.Spgateway
                 builder.AppendFormat("{0:x2}", b);
 
             return builder.ToString().ToUpper();
+        }
+
+        private byte[] HexStringToByteArray(string hexString)
+        {
+            byte[] bytes = new byte[hexString.Length / 2];
+            for(int i = 0; i < hexString.Length; i += 2)
+            {
+                int topChar = (hexString[i] > 0x40 ? hexString[i] - 0x37 : hexString[i] - 0x30) << 4;
+                int bottomChar = hexString[i + 1] > 0x40 ? hexString[i + 1] - 0x37 : hexString[i + 1] - 0x30;
+                bytes[i / 2] = Convert.ToByte(topChar + bottomChar);
+            }
+
+            return bytes;
+        }
+
+        private byte[] RemovePKCS7Padding(byte[] src, int blockSize)
+        {
+            byte padding = (byte)(blockSize - (src.Length % blockSize));
+            var dst = new byte[src.Length + padding];
+
+            Buffer.BlockCopy(src, 0, dst, 0, src.Length);
+            for (int i = src.Length; i < dst.Length; i++)
+                dst[i] = padding;
+
+            return dst;
+        }
+
+        public ResponseTrade<ResponseResult> GetResult(string responseTradeInfo)
+        {
+            var inputBuffer = this.HexStringToByteArray(responseTradeInfo.ToUpper());
+            var aes = new RijndaelManaged
+            {
+                Key = Encoding.UTF8.GetBytes(this.key),
+                IV = Encoding.UTF8.GetBytes(this.iv),
+                Mode = CipherMode.CBC,
+                Padding = PaddingMode.None
+            };
+
+            var bytes = aes.CreateDecryptor().TransformFinalBlock(inputBuffer, 0, inputBuffer.Length);
+
+            var aaa = this.ByteArrayToHexString(bytes).ToLower();
+
+            return null;
+        }
+
+        public ResponseTrade<ResponseResultCode> GetResultCode(string responseTradeInfo)
+        {
+            return null;
         }
     }
 }
