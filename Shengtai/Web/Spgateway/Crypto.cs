@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -29,6 +30,13 @@ namespace Shengtai.Web.Spgateway
             for (int i = src.Length; i < dst.Length; i++)
                 dst[i] = padding;
 
+            return dst;
+        }
+
+        private byte[] RemovePKCS7Padding(byte[] src)
+        {
+            var dst = new byte[src.Length - src[src.Length - 1]];
+            Buffer.BlockCopy(src, 0, dst, 0, dst.Length);
             return dst;
         }
 
@@ -100,18 +108,6 @@ namespace Shengtai.Web.Spgateway
             return bytes;
         }
 
-        private byte[] RemovePKCS7Padding(byte[] src, int blockSize)
-        {
-            byte padding = (byte)(blockSize - (src.Length % blockSize));
-            var dst = new byte[src.Length + padding];
-
-            Buffer.BlockCopy(src, 0, dst, 0, src.Length);
-            for (int i = src.Length; i < dst.Length; i++)
-                dst[i] = padding;
-
-            return dst;
-        }
-
         public ResponseTrade<ResponseResult> GetResult(string responseTradeInfo)
         {
             var inputBuffer = this.HexStringToByteArray(responseTradeInfo.ToUpper());
@@ -123,11 +119,14 @@ namespace Shengtai.Web.Spgateway
                 Padding = PaddingMode.None
             };
 
-            var bytes = aes.CreateDecryptor().TransformFinalBlock(inputBuffer, 0, inputBuffer.Length);
+            var src = aes.CreateDecryptor().TransformFinalBlock(inputBuffer, 0, inputBuffer.Length);
+            var dst = this.RemovePKCS7Padding(src);
 
-            var aaa = this.ByteArrayToHexString(bytes).ToLower();
+            var value = Encoding.UTF8.GetString(dst);
 
-            return null;
+            // todo: 解出字串已驗證ok, 剩物件轉換的實際測試
+            var result = JsonConvert.DeserializeObject<ResponseTrade<ResponseResult>>(value);
+            return result;
         }
 
         public ResponseTrade<ResponseResultCode> GetResultCode(string responseTradeInfo)
