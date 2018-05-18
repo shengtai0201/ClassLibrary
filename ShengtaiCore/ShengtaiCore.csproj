@@ -12,8 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\Shengtai\DefaultExtensions.cs" Link="DefaultExtensions.cs" />
-    <Compile Include="..\Shengtai\ICurrentUser.cs" Link="ICurrentUser.cs" />
     <Compile Include="..\Shengtai\Rng.cs" Link="Rng.cs" />
   </ItemGroup>
 
