@@ -11,5 +11,8 @@ namespace Shengtai.Web
         UserManager<TUser> UserManager { get; set; }
 
         Task<string> FindIdByAccountAsync(string account);
+
+        bool DatabaseInitialized { get; }
+        bool ApplicationDbInitializer();
     }
 }
