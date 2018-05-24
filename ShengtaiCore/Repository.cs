@@ -48,6 +48,26 @@ namespace Shengtai
             return result;
         }
 
+        protected async Task<T> ExecuteScalarAsync<T>(string cmdText, params TParameter[] values)
+        {
+            TConnection connection = Activator.CreateInstance(typeof(TConnection), this.AppSettings.ConnectionStrings.DefaultConnection) as TConnection;
+            connection.Open();
+
+            TCommand command = Activator.CreateInstance(typeof(TCommand), cmdText, connection) as TCommand;
+
+            if (values != null)
+                command.Parameters.AddRange(values);
+
+            var value = await command.ExecuteScalarAsync();
+            var result = (T)Convert.ChangeType(value, typeof(T));
+
+            command.Dispose();
+            connection.Close();
+            connection.Dispose();
+
+            return result;
+        }
+
         protected void ExecuteReader(Action<DbDataReader> dataReaderAction, string cmdText, params TParameter[] values)
         {
             TConnection connection = Activator.CreateInstance(typeof(TConnection), this.AppSettings.ConnectionStrings.DefaultConnection) as TConnection;
