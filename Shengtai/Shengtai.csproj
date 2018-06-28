@@ -132,6 +132,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Web\CookieConsentAttribute.cs" />
     <Compile Include="Web\Spgateway\Crypto.cs" />
     <Compile Include="DefaultExtensions.cs" />
     <Compile Include="ExclusiveSynchronizationContext.cs" />
