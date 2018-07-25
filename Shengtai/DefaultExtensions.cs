@@ -87,6 +87,12 @@ namespace Shengtai
             return keyValues;
         }
 
+        public static KeyValuePair<int, string> GetEnumKeyValuePair(this Enum value)
+        {
+            int key = Convert.ToInt32(value);
+            return new KeyValuePair<int, string>(key, value.GetEnumDescription());
+        }
+
         public static int? Minus(this int? leftValue, int? rightValue)
         {
             if (leftValue.HasValue)

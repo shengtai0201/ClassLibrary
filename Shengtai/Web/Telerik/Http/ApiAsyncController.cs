@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -22,7 +23,20 @@ namespace Shengtai.Web.Telerik.Http
         [HttpDelete]
         public async Task<IHttpActionResult> Delete(TKey key)
         {
-            bool? result = await this.service.DestroyAsync(key);
+            //bool? result = await this.service.DestroyAsync(key);
+
+            //if (result == null)
+            //    return this.NotFound();
+            //else
+            //{
+            //    if (result.Value)
+            //        return this.StatusCode(HttpStatusCode.NoContent);
+            //    else
+            //        return this.InternalServerError();
+            //}
+
+            var response = new DataSourceResponse<TModel>();
+            bool? result = await this.service.DestroyAsync(key, response);
 
             if (result == null)
                 return this.NotFound();
@@ -31,7 +45,10 @@ namespace Shengtai.Web.Telerik.Http
                 if (result.Value)
                     return this.StatusCode(HttpStatusCode.NoContent);
                 else
-                    return this.InternalServerError();
+                {
+                    Exception exception = new Exception(response.ErrorMessage);
+                    return this.InternalServerError(exception);
+                }
             }
         }
 

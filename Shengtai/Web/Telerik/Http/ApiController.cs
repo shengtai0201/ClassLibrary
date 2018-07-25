@@ -13,9 +13,14 @@ namespace Shengtai.Web.Telerik.Http
 
         protected ApiController(IApiService<TModel, TKey> service)
         {
+            if (this.User == null)
+                service.CurrentUser = HttpContext.Current.User;
+            else
+                service.CurrentUser = this.User;
+
+            service.OwinContext = HttpContext.Current.GetOwinContext();
+
             this.service = service;
-            this.service.CurrentUser = this.User;
-            this.service.OwinContext = HttpContext.Current.GetOwinContext();
         }
 
         [HttpDelete]

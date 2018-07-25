@@ -7,7 +7,7 @@ namespace Shengtai.Web.Telerik.Http
     {
         Task<bool> CreateAsync(TModel model, IDataSourceError error);
 
-        Task<bool?> DestroyAsync(TKey key);
+        Task<bool?> DestroyAsync(TKey key, IDataSourceError error);
 
         Task<IDataSourceResponse<TModel>> ReadAsync(DataSourceRequest request);
 
