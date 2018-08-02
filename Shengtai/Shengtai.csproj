@@ -133,6 +133,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Rsa.cs" />
     <Compile Include="Web\CookieConsentAttribute.cs" />
     <Compile Include="Web\Spgateway\Crypto.cs" />
     <Compile Include="DefaultExtensions.cs" />

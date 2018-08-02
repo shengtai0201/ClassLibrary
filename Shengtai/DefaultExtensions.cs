@@ -66,6 +66,27 @@ namespace Shengtai
             return null;
         }
 
+        public static object[] GetEnumDictionary<TEnum>(this Type type, params Enum[] skipEnums) where TEnum : struct
+        {
+            IList<object> keyValues = new List<object>();
+
+            var values = Enum.GetValues(type);
+            foreach (Enum key in values)
+            {
+                if (Enum.TryParse(key.ToString(), out TEnum result))
+                {
+                    var current = result as Enum;
+                    if (skipEnums.Contains(current))
+                        continue;
+                }
+
+                var value = key.GetEnumDescription();
+                keyValues.Add(new KeyValuePair<Enum, string>(key, value));
+            }
+
+            return keyValues.ToArray();
+        }
+
         public static IList<KeyValuePair<int, string>> GetEnumDictionary<TEnum>(params Enum[] skipEnums) where TEnum : struct
         {
             IList<KeyValuePair<int, string>> keyValues = new List<KeyValuePair<int, string>>();
