@@ -20,7 +20,7 @@ namespace Shengtai
                 ProviderName = "Microsoft Strong Cryptographic Provider",
                 ProviderType = 1
             };
-            this.SetProvider();
+            this.SetProvider(true);
         }
 
         private void SetProvider(bool regenerate = true)
@@ -60,5 +60,11 @@ namespace Shengtai
 
             return Encoding.UTF8.GetString(this.provider.Decrypt(Convert.FromBase64String(s), false));
         }
+
+        //public string SignData()
+        //{
+        //    this.SetProvider(this.provider == null);
+
+        //}
     }
 }
