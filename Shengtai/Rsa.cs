@@ -20,7 +20,7 @@ namespace Shengtai
                 ProviderName = "Microsoft Strong Cryptographic Provider",
                 ProviderType = 1
             };
-            this.SetProvider(true);
+            this.SetProvider();
         }
 
         private void SetProvider(bool regenerate = true)
@@ -61,10 +61,22 @@ namespace Shengtai
             return Encoding.UTF8.GetString(this.provider.Decrypt(Convert.FromBase64String(s), false));
         }
 
-        //public string SignData()
-        //{
-        //    this.SetProvider(this.provider == null);
+        public string SignData(string s, string privateKey)
+        {
+            this.SetProvider(this.provider == null);
+            this.provider.FromXmlString(Encoding.UTF8.GetString(Convert.FromBase64String(privateKey)));
 
-        //}
+            return Convert.ToBase64String(this.provider.SignData(Encoding.UTF8.GetBytes(s), new SHA1CryptoServiceProvider()));
+        }
+
+        public bool VerifyData(string s, string privateKey, string publicKey, string signature, out string data)
+        {
+            this.SetProvider(this.provider == null);
+            this.provider.FromXmlString(Encoding.UTF8.GetString(Convert.FromBase64String(publicKey)));
+
+            data = this.Decrypt(s, privateKey);
+            return this.provider.VerifyData(Encoding.UTF8.GetBytes(data), new SHA1CryptoServiceProvider(),
+                Convert.FromBase64String(signature));
+        }
     }
 }
