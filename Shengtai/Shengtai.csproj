@@ -136,6 +136,15 @@
     <Compile Include="Rsa.cs" />
     <Compile Include="Web\CookieConsentAttribute.cs" />
     <Compile Include="Web\DataAnnotations\CheckBoxAttribute.cs" />
+    <Compile Include="Web\LinePay\ConfirmResponseInfo.cs" />
+    <Compile Include="Web\LinePay\ConfirmUrlTypes.cs" />
+    <Compile Include="Web\LinePay\Currencies.cs" />
+    <Compile Include="Web\LinePay\PayTypes.cs" />
+    <Compile Include="Web\LinePay\Request.cs" />
+    <Compile Include="Web\LinePay\ReserveRequestExtras.cs" />
+    <Compile Include="Web\LinePay\ReserveRequest.cs" />
+    <Compile Include="Web\LinePay\ReserveResponseInfo.cs" />
+    <Compile Include="Web\LinePay\Response.cs" />
     <Compile Include="Web\Spgateway\Crypto.cs" />
     <Compile Include="DefaultExtensions.cs" />
     <Compile Include="ExclusiveSynchronizationContext.cs" />

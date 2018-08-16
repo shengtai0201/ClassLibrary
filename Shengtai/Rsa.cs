@@ -66,7 +66,7 @@ namespace Shengtai
             this.SetProvider(this.provider == null);
             this.provider.FromXmlString(Encoding.UTF8.GetString(Convert.FromBase64String(privateKey)));
 
-            return Convert.ToBase64String(this.provider.SignData(Encoding.UTF8.GetBytes(s), new SHA1CryptoServiceProvider()));
+            return Convert.ToBase64String(this.provider.SignData(Encoding.UTF8.GetBytes(s), new SHA256CryptoServiceProvider()));
         }
 
         public bool VerifyData(string s, string privateKey, string publicKey, string signature, out string data)
@@ -75,7 +75,7 @@ namespace Shengtai
             this.provider.FromXmlString(Encoding.UTF8.GetString(Convert.FromBase64String(publicKey)));
 
             data = this.Decrypt(s, privateKey);
-            return this.provider.VerifyData(Encoding.UTF8.GetBytes(data), new SHA1CryptoServiceProvider(),
+            return this.provider.VerifyData(Encoding.UTF8.GetBytes(data), new SHA256CryptoServiceProvider(),
                 Convert.FromBase64String(signature));
         }
     }
