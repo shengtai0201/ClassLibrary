@@ -88,5 +88,45 @@ namespace Shengtai
 
             return bytes;
         }
+
+        public static byte[] Decompress(ICollection<byte[]> buffers)
+        {
+            // 解壓縮
+            IList<byte[]> innerBuffers = new List<byte[]>();
+            foreach (var buffer in buffers)
+            {
+                MemoryStream zipStream = new MemoryStream(buffer);
+
+                byte[] streamBytes = null;
+                using (ZipFile zip = ZipFile.Read(zipStream))
+                {
+                    var zipEntry = zip.FirstOrDefault();
+
+                    MemoryStream stream = new MemoryStream();
+                    zipEntry.Extract(stream);
+
+                    streamBytes = stream.ToArray();
+                }
+
+                if (streamBytes == null)
+                    throw new Exception();
+
+                innerBuffers.Add(streamBytes);
+            }
+
+            // 合併
+            byte[] bytes = innerBuffers[0];
+            for (int i = 1; i < innerBuffers.Count; i++)
+            {
+                byte[] destinationArray = new byte[bytes.Length + innerBuffers[i].Length];
+
+                Array.Copy(bytes, 0, destinationArray, 0, bytes.Length);
+                Array.Copy(innerBuffers[i], 0, destinationArray, bytes.Length, innerBuffers[i].Length);
+
+                bytes = destinationArray;
+            }
+
+            return bytes;
+        }
     }
 }

@@ -96,6 +96,7 @@
       <HintPath>..\..\LoanSky\packages\System.Runtime.CompilerServices.Unsafe.4.5.1\lib\netstandard1.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Spatial, Version=5.8.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\LoanSky\packages\System.Spatial.5.8.3\lib\net40\System.Spatial.dll</HintPath>
     </Reference>
@@ -136,7 +137,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Rsa.cs" />
+    <Compile Include="Cryptography\Pkcs.cs" />
+    <Compile Include="Cryptography\Pkcs1.cs" />
+    <Compile Include="Cryptography\Pkcs7.cs" />
+    <Compile Include="Cryptography\Rsa.cs" />
     <Compile Include="Web\CookieConsentAttribute.cs" />
     <Compile Include="Web\DataAnnotations\CheckBoxAttribute.cs" />
     <Compile Include="Web\LinePay\ConfirmResponseInfo.cs" />
@@ -159,7 +163,7 @@
     <Compile Include="Web\NpgsqlRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository.cs" />
-    <Compile Include="Rng.cs" />
+    <Compile Include="Cryptography\Rng.cs" />
     <Compile Include="Web\Spgateway\IResponseBarcodeResultCode.cs" />
     <Compile Include="Web\Spgateway\IResponseCvsResultCode.cs" />
     <Compile Include="Web\Spgateway\IResponseResult.cs" />
