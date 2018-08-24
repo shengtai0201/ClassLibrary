@@ -64,7 +64,7 @@ namespace Shengtai.Cryptography
                     else if (attributeObject.Oid.Value.CompareTo("1.2.840.113549.1.9.5") == 0)
                     {
                         var s = Encoding.UTF8.GetString(array[0].RawData, 2, array[0].RawData.Length - 2);
-                        result.Add("SignTime", DateTime.ParseExact(s, "yyyyMMddHHmmssZ", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToString("yyyy/MM/dd HH:mm:ss"));
+                        result.Add("SignTime", DateTime.ParseExact(s, "yyMMddHHmmssZ", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal).ToString("yyyy/MM/dd HH:mm:ss"));
                     }
                     else if (attributeObject.Oid.Value.CompareTo("2.16.886.1.100.2.204") == 0)
                         result.Add("CardNumber", Encoding.UTF8.GetString(array[0].RawData, 2, array[0].RawData.Length - 2));
