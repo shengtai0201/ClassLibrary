@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.Identity.EntityFramework;
+﻿using CommonServiceLocator;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Shengtai.Web;
@@ -11,6 +12,7 @@ using System.Reflection;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web.Mvc;
 
 namespace Shengtai
 {
