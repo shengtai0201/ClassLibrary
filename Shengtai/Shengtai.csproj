@@ -205,6 +205,7 @@
     <Compile Include="Web\Telerik\ServerFilterInfo.cs" />
     <Compile Include="Web\Telerik\ServerPageInfo.cs" />
     <Compile Include="Web\ValidateObjectAttribute.cs" />
+    <Compile Include="Web\Mvc\XmlResult.cs" />
     <Compile Include="Windows\NpgsqlRepository.cs" />
     <Compile Include="Windows\SqlRepository.cs" />
     <Compile Include="Zip.cs" />
