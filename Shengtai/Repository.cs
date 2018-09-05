@@ -91,6 +91,14 @@ namespace Shengtai
                 return value.ToString();
         }
 
+        protected int? DbToInt(object value)
+        {
+            if (value == DBNull.Value)
+                return null;
+            else
+                return Convert.ToInt32(value);
+        }
+
         protected int ExecuteNonQuery(string cmdText, params TParameter[] values)
         {
             var selectConnection = Activator.CreateInstance(typeof(TConnection), this.connectionString) as TConnection;

@@ -1,10 +1,12 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using System.Xml;
 
 namespace Shengtai.Web.Mvc
 {
@@ -24,8 +26,12 @@ namespace Shengtai.Web.Mvc
             context.HttpContext.Response.Clear();
             context.HttpContext.Response.ContentType = "text/xml";
 
-            var serializer = new System.Xml.Serialization.XmlSerializer(this.model.GetType());
-            serializer.Serialize(context.HttpContext.Response.Output, this.model);
+            var value = JsonConvert.SerializeObject(this.model);
+            var document = JsonConvert.DeserializeXmlNode(value);
+            document.PrependChild(document.CreateXmlDeclaration("1.0", "utf-8", null));
+
+            var s = document.InnerXml;
+            context.HttpContext.Response.Write(s);
         }
     }
 }
