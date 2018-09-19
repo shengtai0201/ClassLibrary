@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2026
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShengtaiCore20", "ShengtaiCore\ShengtaiCore20.csproj", "{CA94E0B2-8723-4218-9205-7107A1662122}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CA94E0B2-8723-4218-9205-7107A1662122}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA94E0B2-8723-4218-9205-7107A1662122}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA94E0B2-8723-4218-9205-7107A1662122}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA94E0B2-8723-4218-9205-7107A1662122}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AB432BAF-C4D7-460D-A193-8940EB69C36A}
+	EndGlobalSection
+EndGlobal
