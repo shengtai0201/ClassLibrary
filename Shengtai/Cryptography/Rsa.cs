@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,8 +20,11 @@ namespace Shengtai.Cryptography
                 KeyContainerName = keyContainerName,
                 Flags = CspProviderFlags.UseMachineKeyStore,
                 ProviderName = "Microsoft Strong Cryptographic Provider",
-                ProviderType = 1
+                ProviderType = 1,
+                CryptoKeySecurity = new CryptoKeySecurity()
             };
+            this.parameters.CryptoKeySecurity.SetAccessRule(
+                new CryptoKeyAccessRule("everyone", CryptoKeyRights.FullControl, AccessControlType.Allow));
 
             this.halg = new SHA1CryptoServiceProvider();
             this.SetProvider();
@@ -37,7 +41,6 @@ namespace Shengtai.Cryptography
                 }
 
                 this.provider = new RSACryptoServiceProvider(this.parameters);
-                //this.provider = new RSACryptoServiceProvider();
             }
         }
 
