@@ -24,7 +24,7 @@ namespace Shengtai.Cryptography
                 CryptoKeySecurity = new CryptoKeySecurity()
             };
             this.parameters.CryptoKeySecurity.SetAccessRule(
-                new CryptoKeyAccessRule("everyone", CryptoKeyRights.FullControl, AccessControlType.Allow));
+                new CryptoKeyAccessRule("Everyone", CryptoKeyRights.FullControl, AccessControlType.Allow));
 
             this.halg = new SHA1CryptoServiceProvider();
             this.SetProvider();
