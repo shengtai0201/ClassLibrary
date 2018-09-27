@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Shengtai.Web.Spgateway
 {
     /// <summary>
-    /// ATM 轉帳、超商代碼繳費、超商條碼繳費共同回傳參數 
+    /// ATM 轉帳、超商代碼繳費、超商條碼繳費、超商取貨付款共同回傳參數 
     /// </summary>
     public interface IResponseResultCode
     {

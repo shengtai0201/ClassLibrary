@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Shengtai.Web.Spgateway
 {
-    public class ResponseResult : IResponseCreditResult, IResponseWebatmResult, IResponseVaccResult, IResponseCvsResult, 
+    public class ResponseResult : IResponseCreditResult, IResponseWebatmResult, IResponseVaccResult, IResponseCvsResult,
         IResponseBarcodeResult, IResponseP2gResult, IResponseCvscomResult
     {
         #region 所有支付方式共同回傳參數
@@ -33,6 +33,7 @@ namespace Shengtai.Web.Spgateway
         public string ECI { get; set; }
         public int TokenUseStatus { get; set; }
         public int RedAmt { get; set; }
+        public PaymentMethods PaymentMethod { get; set; }
         #endregion
 
         #region WEBATM、ATM 繳費回傳參數
@@ -60,6 +61,7 @@ namespace Shengtai.Web.Spgateway
         #endregion
 
         #region 超商物流回傳參數 
+        public string StoreCode { get; set; }
         public string StoreName { get; set; }
         public string StoreAddr { get; set; }
         public int TradeType { get; set; }

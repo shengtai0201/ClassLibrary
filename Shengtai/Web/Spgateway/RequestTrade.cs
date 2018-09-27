@@ -216,11 +216,33 @@ namespace Shengtai.Web.Spgateway
         public int? CREDIT { get; set; }
 
         /// <summary>
+        /// Google Pay 啟用
+        /// </summary>
+        /// <value>
+        /// 1.設定是否啟用 Google Pay 支付方式。  
+        ///     1 =啟用   
+        ///     0 或者未有此參數=不啟用 
+        /// </value>
+        [StringLength(1)]
+        public int? ANDROIDPAY { get; set; }
+
+        /// <summary>
+        /// Samsung Pay 啟用
+        /// </summary>
+        /// <value>
+        /// 1.設定是否啟用 Samsung Pay 支付方式。  
+        ///     1 =啟用   
+        ///     0 或者未有此參數=不啟用 
+        /// </value>
+        [StringLength(1)]
+        public int? SAMSUNGPAY { get; set; }
+
+        /// <summary>
         /// 信用卡分期付款啟用 
         /// </summary>
         /// <value>
-        /// 1.此欄位值=1 時，即代表開啟所有分期期 別，且不可帶入其他期別參數。 
-        /// 2.此欄位值為下列數值時，即代表開啟該分 期期別。  
+        /// 1.此欄位值=1 時，即代表開啟所有分期期別，且不可帶入其他期別參數。 
+        /// 2.此欄位值為下列數值時，即代表開啟該分期期別。  
         ///     3=分 3 期功能  
         ///     6=分 6 期功能  
         ///     12=分 12 期功能  
@@ -302,7 +324,7 @@ namespace Shengtai.Web.Spgateway
         public int? BARCODE { get; set; }
 
         /// <summary>
-        /// Pay2go 電子錢 包啟用 
+        /// Pay2go 電子錢包啟用 
         /// </summary>
         /// <value>
         /// 1.設定是否啟用 Pay2go 電子錢包支付方 式。 

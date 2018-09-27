@@ -36,7 +36,7 @@ namespace Shengtai.Web.Spgateway
         /// 回傳參數 
         /// </summary>
         /// <value>
-        /// 當 RespondType 為 JSON 時，回傳參數會放至此 陣列下。 
+        /// 當 RespondType 為 JSON 時，回傳參數會放至此陣列下。 
         /// </value>
         public T Result { get; set; }
     }

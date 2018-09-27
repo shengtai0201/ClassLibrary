@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 namespace Shengtai.Web.Spgateway
 {
     /// <summary>
-    /// 超商物流回傳參數 
+    /// 超商物流回傳參數
     /// </summary>
-    /// <seealso cref="Shengtai.Web.Spgateway.ResponseResult" />
-    public interface IResponseCvscomResult : IResponseResult
+    /// <seealso cref="Shengtai.Web.Spgateway.IResponseResultCode" />
+    public interface IResponseCvscomResultCode : IResponseResultCode
     {
         /// <summary>
         /// 超商門市編號 

@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -165,27 +166,31 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository.cs" />
     <Compile Include="Cryptography\Rng.cs" />
+    <Compile Include="Web\Spgateway\IResponseBarcodeResult.cs" />
     <Compile Include="Web\Spgateway\IResponseBarcodeResultCode.cs" />
+    <Compile Include="Web\Spgateway\IResponseCvscomResultCode.cs" />
     <Compile Include="Web\Spgateway\IResponseCvsResultCode.cs" />
-    <Compile Include="Web\Spgateway\IResponseResult.cs" />
     <Compile Include="Web\Spgateway\IResponseResultCode.cs" />
+    <Compile Include="Web\Spgateway\IResponseSamaungPayResult.cs" />
+    <Compile Include="Web\Spgateway\IResponseGooglePayResult.cs" />
+    <Compile Include="Web\Spgateway\IResponseCvscomResult.cs" />
+    <Compile Include="Web\Spgateway\IResponseCvsResult.cs" />
+    <Compile Include="Web\Spgateway\IResponseP2gResult.cs" />
+    <Compile Include="Web\Spgateway\IResponseResult.cs" />
     <Compile Include="Web\Spgateway\IResponseVaccResult.cs" />
     <Compile Include="Web\Spgateway\IResponseVaccResultCode.cs" />
+    <Compile Include="Web\Spgateway\IResponseWebatmResult.cs" />
     <Compile Include="Web\Spgateway\P2GPaymentTypes.cs" />
+    <Compile Include="Web\Spgateway\PaymentMethods.cs" />
     <Compile Include="Web\Spgateway\PaymentTypes.cs" />
     <Compile Include="Web\Spgateway\Request.cs" />
     <Compile Include="Web\Spgateway\RequestTrade.cs" />
     <Compile Include="Web\Spgateway\RequestTradeToken.cs" />
     <Compile Include="Web\Spgateway\Response.cs" />
-    <Compile Include="Web\Spgateway\IResponseBarcodeResult.cs" />
     <Compile Include="Web\Spgateway\IResponseCreditResult.cs" />
-    <Compile Include="Web\Spgateway\IResponseCvscomResult.cs" />
-    <Compile Include="Web\Spgateway\IResponseCvsResult.cs" />
-    <Compile Include="Web\Spgateway\IResponseP2gResult.cs" />
     <Compile Include="Web\Spgateway\ResponseResult.cs" />
     <Compile Include="Web\Spgateway\ResponseResultCode.cs" />
     <Compile Include="Web\Spgateway\ResponseTrade.cs" />
-    <Compile Include="Web\Spgateway\IResponseWebatmResult.cs" />
     <Compile Include="Web\SqlRepository.cs" />
     <Compile Include="Web\Telerik\DataSourceRequest.cs" />
     <Compile Include="Web\Telerik\DataSourceResponse.cs" />

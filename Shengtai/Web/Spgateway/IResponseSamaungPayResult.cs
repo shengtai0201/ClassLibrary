@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 namespace Shengtai.Web.Spgateway
 {
     /// <summary>
-    /// 信用卡支付回傳參數
+    /// Samaung Pay支付回傳參數
     /// </summary>
     /// <seealso cref="Shengtai.Web.Spgateway.ResponseResult" />
-    public interface IResponseCreditResult : IResponseResult
+    public interface IResponseSamaungPayResult : IResponseResult
     {
         /// <summary>
         /// 金融機構回應碼 

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Shengtai.Web.Spgateway
 {
+    /// <summary>
+    /// 支付方式
+    /// </summary>
     public enum PaymentTypes
     {
         /// <summary>
