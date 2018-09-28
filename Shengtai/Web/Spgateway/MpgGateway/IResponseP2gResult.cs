@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shengtai.Web.Spgateway
+namespace Shengtai.Web.Spgateway.MpgGateway
 {
     /// <summary>
     /// Pay2go 電子錢包回傳參數 

@@ -5,13 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shengtai.Web.Spgateway
+namespace Shengtai.Web.Spgateway.MpgGateway
 {
     /// <summary>
-    /// Google Pay 支付回傳參數
+    /// 信用卡支付回傳參數（包含：Google Pay、Samaung Pay）
     /// </summary>
     /// <seealso cref="Shengtai.Web.Spgateway.ResponseResult" />
-    public interface IResponseGooglePayResult : IResponseResult
+    public interface IResponseCreditResult : IResponseResult
     {
         /// <summary>
         /// 金融機構回應碼 

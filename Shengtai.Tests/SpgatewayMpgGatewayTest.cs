@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using Shengtai.Web.Spgateway;
+using Shengtai.Web.Spgateway.MpgGateway;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,13 +11,13 @@ using System.Threading.Tasks;
 namespace Shengtai.Tests
 {
     [TestFixture]
-    public class SpgatewayTest
+    public class SpgatewayMpgGatewayTest
     {
-        private string url;
-        private string key;
-        private string iv;
+        private readonly string url;
+        private readonly string key;
+        private readonly string iv;
 
-        public SpgatewayTest()
+        public SpgatewayMpgGatewayTest()
         {
             this.url = "https://ccore.spgateway.com/MPG/mpg_gateway";
             this.key = "12345678901234567890123456789012";
@@ -42,7 +43,7 @@ namespace Shengtai.Tests
         public void GetTradeInfoTest()
         {
             // assign
-            var crypto = new Crypto(this.key, this.iv);
+            var crypto = new Web.Spgateway.MpgGateway.Cryptography(this.key, this.iv);
             var trade = new RequestTrade
             {
                 MerchantID = "3430112",
@@ -66,7 +67,7 @@ namespace Shengtai.Tests
         public void GetTradeShaTest()
         {
             // assign
-            var crypto = new Crypto(this.key, this.iv);
+            var crypto = new Web.Spgateway.MpgGateway.Cryptography(this.key, this.iv);
             var tradeInfo = "ff91c8aa01379e4de621a44e5f11f72e4d25bdb1a18242db6cef9ef07d80b0165e476fd1d9acaa53170272c82d122961e1a0700a7427cfa1cf90db7f6d6593bbc93102a4d4b9b66d9974c13c31a7ab4bba1d4e0790f0cbbbd7ad64c6d3c8012a601ceaa808bff70f94a8efa5a4f984b9d41304ffd879612177c622f75f4214fa";
 
             // act
@@ -92,7 +93,7 @@ namespace Shengtai.Tests
             };
 
             // act
-            var actual = new Crypto(this.key, this.iv).GetResult(response.TradeInfo);
+            var actual = new Web.Spgateway.MpgGateway.Cryptography(this.key, this.iv).GetResult(response.TradeInfo);
         }
 
         // 非即時交易支付方式：超商代碼繳費(CVS)、ATM 轉帳(VACC)、
@@ -110,14 +111,14 @@ namespace Shengtai.Tests
             };
 
             // act
-            var actual = new Crypto(this.key, this.iv).GetResult(response.TradeInfo);
+            var actual = new Web.Spgateway.MpgGateway.Cryptography(this.key, this.iv).GetResult(response.TradeInfo);
         }
 
         [Test]
         public void AAA()
         {
             // assign
-            var crypto = new Crypto(this.key, this.iv);
+            var crypto = new Web.Spgateway.MpgGateway.Cryptography(this.key, this.iv);
             var trade = new RequestTrade
             {
                 MerchantID = "3430112",

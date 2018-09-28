@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shengtai.Web.Spgateway
+namespace Shengtai.Web.Spgateway.MpgGateway
 {
     /// <summary>
     /// 所有支付方式共同回傳參數 

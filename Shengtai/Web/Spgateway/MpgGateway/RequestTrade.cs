@@ -1,58 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shengtai.Web.Spgateway
+namespace Shengtai.Web.Spgateway.MpgGateway
 {
     /// <summary>
     /// 交易資料參數
     /// </summary>
-    public class RequestTrade
+    public class RequestTrade : Post
     {
-        /// <summary>
-        /// 商店代號
-        /// </summary>
-        /// <value>
-        /// 智付通商店代號。
-        /// </value>
-        [StringLength(15)]
-        [Required]
-        public string MerchantID { get; set; }
-
-        /// <summary>
-        /// 回傳格式
-        /// </summary>
-        /// <value>
-        /// JSON 或是 String。
-        /// </value>
-        [StringLength(6)]
-        [Required]
-        public string RespondType { get; set; }// = "JSON";
-
-        /// <summary>
-        /// 時間戳記 
-        /// </summary>
-        /// <value>
-        /// 自從 Unix 纪元（格林威治時間 1970 年 1 月 1 日 00:00:00）到當前時間的秒數，若 以 php 程式語言為例，即為呼叫 time()函式 所回傳的值。
-        /// 例：2014-05-15 15:00:00(+08:00 時區)這個時間的時間戳記為 1400137200。 
-        /// </value>
-        [StringLength(50)]
-        [Required]
-        public string TimeStamp { get; set; }
-
-        /// <summary>
-        /// 串接程式版本 
-        /// </summary>
-        /// <value>
-        /// 請帶 1.4。 
-        /// </value>
-        [StringLength(5)]
-        [Required]
-        public string Version { get; set; }// = "1.4";
-
         /// <summary>
         /// 語系 
         /// </summary>
@@ -61,30 +21,7 @@ namespace Shengtai.Web.Spgateway
         /// 2.當未提供此參數或此參數數值錯誤時，將預設為繁體中文版。 
         /// </value>
         [StringLength(5)]
-        public string LangType { get; set; }// = "zh-tw";
-
-        /// <summary>
-        /// 商店訂單編號 
-        /// </summary>
-        /// <value>
-        /// 1.商店自訂訂單編號，限英、數字、”_ ”格式。 例：201406010001。 
-        /// 2.長度限制為 20 字。 
-        /// 3.同一商店中此編號不可重覆。 
-        /// </value>
-        [StringLength(20)]
-        [Required]
-        public string MerchantOrderNo { get; set; }
-
-        /// <summary>
-        /// 訂單金額 
-        /// </summary>
-        /// <value>
-        /// 1.純數字不含符號，例：1000。 
-        /// 2.幣別：新台幣。 
-        /// </value>
-        [StringLength(10)]
-        [Required]
-        public int Amt { get; set; }
+        public string LangType { get; set; }
 
         /// <summary>
         /// 商品資訊 
@@ -95,6 +32,7 @@ namespace Shengtai.Web.Spgateway
         /// </value>
         [StringLength(50)]
         [Required]
+        [Column(Order = 6)]
         public string ItemDesc { get; set; }
 
         /// <summary>
@@ -347,13 +285,5 @@ namespace Shengtai.Web.Spgateway
         /// </value>
         [StringLength(1)]
         public int? CVSCOM { get; set; }
-
-        //public RequestTrade()
-        //{
-        //    //this.Version = "1.4";
-        //    //this.LangType = "zh-tw";
-        //    //this.ExpireDate = DateTime.Now.AddDays(6).ToString("yyyyMMdd");
-        //    //this.EmailModify = 1;
-        //}
     }
 }

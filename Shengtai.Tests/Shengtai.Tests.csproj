@@ -46,7 +46,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SpgatewayTest.cs" />
+    <Compile Include="SpgatewayQueryTradeInfoTest.cs" />
+    <Compile Include="SpgatewayMpgGatewayTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

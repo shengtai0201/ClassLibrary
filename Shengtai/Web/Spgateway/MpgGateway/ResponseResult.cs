@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shengtai.Web.Spgateway
+namespace Shengtai.Web.Spgateway.MpgGateway
 {
-    public class ResponseResult : IResponseCreditResult, IResponseWebatmResult, IResponseVaccResult, IResponseCvsResult,
+    public class ResponseResult : IResponseCreditResult, IResponseWVResult, IResponseCvsResult,
         IResponseBarcodeResult, IResponseP2gResult, IResponseCvscomResult
     {
         #region 所有支付方式共同回傳參數

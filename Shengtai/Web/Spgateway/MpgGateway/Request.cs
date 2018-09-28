@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shengtai.Web.Spgateway
+namespace Shengtai.Web.Spgateway.MpgGateway
 {
     public class Request
     {
@@ -49,7 +49,7 @@ namespace Shengtai.Web.Spgateway
         [Required]
         public string Version { get; set; }// = "1.4";
 
-        public static Request NewInstance(RequestTrade trade, Crypto crypto)
+        public static Request NewInstance(RequestTrade trade, Cryptography crypto)
         {
             var request = new Request
             {

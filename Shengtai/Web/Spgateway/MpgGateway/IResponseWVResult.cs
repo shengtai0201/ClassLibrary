@@ -5,13 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shengtai.Web.Spgateway
+namespace Shengtai.Web.Spgateway.MpgGateway
 {
     /// <summary>
-    /// ATM 繳費回傳參數 
+    /// WEBATM、ATM繳費回傳參數
     /// </summary>
     /// <seealso cref="Shengtai.Web.Spgateway.ResponseResult" />
-    public interface IResponseVaccResult : IResponseResult
+    public interface IResponseWVResult : IResponseResult
     {
         /// <summary>
         /// 付款人金融機構代碼 

@@ -154,7 +154,7 @@
     <Compile Include="Web\LinePay\ReserveRequest.cs" />
     <Compile Include="Web\LinePay\ReserveResponseInfo.cs" />
     <Compile Include="Web\LinePay\Response.cs" />
-    <Compile Include="Web\Spgateway\Crypto.cs" />
+    <Compile Include="Web\Spgateway\MpgGateway\Cryptography.cs" />
     <Compile Include="DefaultExtensions.cs" />
     <Compile Include="ExclusiveSynchronizationContext.cs" />
     <Compile Include="Fraction.cs" />
@@ -166,31 +166,36 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository.cs" />
     <Compile Include="Cryptography\Rng.cs" />
-    <Compile Include="Web\Spgateway\IResponseBarcodeResult.cs" />
-    <Compile Include="Web\Spgateway\IResponseBarcodeResultCode.cs" />
-    <Compile Include="Web\Spgateway\IResponseCvscomResultCode.cs" />
-    <Compile Include="Web\Spgateway\IResponseCvsResultCode.cs" />
-    <Compile Include="Web\Spgateway\IResponseResultCode.cs" />
-    <Compile Include="Web\Spgateway\IResponseSamaungPayResult.cs" />
-    <Compile Include="Web\Spgateway\IResponseGooglePayResult.cs" />
-    <Compile Include="Web\Spgateway\IResponseCvscomResult.cs" />
-    <Compile Include="Web\Spgateway\IResponseCvsResult.cs" />
-    <Compile Include="Web\Spgateway\IResponseP2gResult.cs" />
-    <Compile Include="Web\Spgateway\IResponseResult.cs" />
-    <Compile Include="Web\Spgateway\IResponseVaccResult.cs" />
-    <Compile Include="Web\Spgateway\IResponseVaccResultCode.cs" />
-    <Compile Include="Web\Spgateway\IResponseWebatmResult.cs" />
-    <Compile Include="Web\Spgateway\P2GPaymentTypes.cs" />
+    <Compile Include="Web\Spgateway\MpgGateway\IResponseBarcodeResult.cs" />
+    <Compile Include="Web\Spgateway\MpgGateway\IResponseBarcodeResultCode.cs" />
+    <Compile Include="Web\Spgateway\MpgGateway\IResponseCvscomResultCode.cs" />
+    <Compile Include="Web\Spgateway\MpgGateway\IResponseCvsResultCode.cs" />
+    <Compile Include="Web\Spgateway\MpgGateway\IResponseResultCode.cs" />
+    <Compile Include="Web\Spgateway\MpgGateway\IResponseCvscomResult.cs" />
+    <Compile Include="Web\Spgateway\MpgGateway\IResponseCvsResult.cs" />
+    <Compile Include="Web\Spgateway\MpgGateway\IResponseP2gResult.cs" />
+    <Compile Include="Web\Spgateway\MpgGateway\IResponseResult.cs" />
+    <Compile Include="Web\Spgateway\MpgGateway\IResponseVaccResultCode.cs" />
+    <Compile Include="Web\Spgateway\MpgGateway\IResponseWVResult.cs" />
+    <Compile Include="Web\Spgateway\MpgGateway\P2GPaymentTypes.cs" />
     <Compile Include="Web\Spgateway\PaymentMethods.cs" />
     <Compile Include="Web\Spgateway\PaymentTypes.cs" />
-    <Compile Include="Web\Spgateway\Request.cs" />
-    <Compile Include="Web\Spgateway\RequestTrade.cs" />
-    <Compile Include="Web\Spgateway\RequestTradeToken.cs" />
-    <Compile Include="Web\Spgateway\Response.cs" />
-    <Compile Include="Web\Spgateway\IResponseCreditResult.cs" />
-    <Compile Include="Web\Spgateway\ResponseResult.cs" />
-    <Compile Include="Web\Spgateway\ResponseResultCode.cs" />
+    <Compile Include="Web\Spgateway\MpgGateway\Request.cs" />
+    <Compile Include="Web\Spgateway\MpgGateway\RequestTrade.cs" />
+    <Compile Include="Web\Spgateway\MpgGateway\RequestTradeToken.cs" />
+    <Compile Include="Web\Spgateway\MpgGateway\Response.cs" />
+    <Compile Include="Web\Spgateway\MpgGateway\IResponseCreditResult.cs" />
+    <Compile Include="Web\Spgateway\MpgGateway\ResponseResult.cs" />
+    <Compile Include="Web\Spgateway\MpgGateway\ResponseResultCode.cs" />
+    <Compile Include="Web\Spgateway\QueryTradeInfo\Cryptography.cs" />
+    <Compile Include="Web\Spgateway\QueryTradeInfo\IResponseCBVResult.cs" />
+    <Compile Include="Web\Spgateway\QueryTradeInfo\IResponseCreditResult.cs" />
+    <Compile Include="Web\Spgateway\QueryTradeInfo\IResponseResult.cs" />
+    <Compile Include="Web\Spgateway\QueryTradeInfo\RequestTrade.cs" />
+    <Compile Include="Web\Spgateway\QueryTradeInfo\ResponseResult.cs" />
     <Compile Include="Web\Spgateway\ResponseTrade.cs" />
+    <Compile Include="Web\Spgateway\Post.cs" />
+    <Compile Include="Web\Spgateway\Security.cs" />
     <Compile Include="Web\SqlRepository.cs" />
     <Compile Include="Web\Telerik\DataSourceRequest.cs" />
     <Compile Include="Web\Telerik\DataSourceResponse.cs" />
@@ -219,7 +224,9 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Web\EzPay\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

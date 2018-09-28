@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -8,17 +9,12 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shengtai.Web.Spgateway
+namespace Shengtai.Web.Spgateway.MpgGateway
 {
-    public class Crypto
+    public class Cryptography : Security
     {
-        private string key;
-        private string iv;
-
-        public Crypto(string key, string iv)
+        public Cryptography(string key, string iv) : base(key, iv)
         {
-            this.key = key;
-            this.iv = iv;
         }
 
         private byte[] AddPKCS7Padding(byte[] src, int blockSize)
@@ -57,12 +53,13 @@ namespace Shengtai.Web.Spgateway
             return new string(c);
         }
 
-        public string GetTradeInfo(RequestTrade trade)
+        public override string GetTradeInfo(object trade)
         {
             var properties = trade.GetType()
                 .GetProperties(BindingFlags.Instance | BindingFlags.Public)
-                .Select(x => new { x.Name, Value = x.GetValue(trade, null) })
+                .Select(x => new { x.Name, Value = x.GetValue(trade, null), Order = GetOrder(x) })
                 .Where(x => x.Value != null && !string.IsNullOrWhiteSpace(x.Value.ToString()))
+                .OrderBy(x => x.Order)
                 .ToDictionary(x => x.Name, x => x.Value);
 
             var s = string.Join("&", properties.Select(x => x.Key + "=" + x.Value));
@@ -80,7 +77,7 @@ namespace Shengtai.Web.Spgateway
             return this.ByteArrayToHexString(bytes).ToLower();
         }
 
-        public string GetTradeSha(string tradeInfo)
+        public override string GetTradeSha(string tradeInfo)
         {
             var s = $"HashKey={this.key}&{tradeInfo}&HashIV={this.iv}";
             var buffer = Encoding.UTF8.GetBytes(s);
@@ -125,7 +122,7 @@ namespace Shengtai.Web.Spgateway
             var value = Encoding.UTF8.GetString(dst);
 
             // todo: 解出字串已驗證ok, 剩物件轉換的實際測試
-            var result = JsonConvert.DeserializeObject<ResponseTrade<ResponseResult>>(value);
+            var result = JsonConvert.DeserializeObject<ResponseTrade<MpgGateway.ResponseResult>>(value);
             return result;
         }
 

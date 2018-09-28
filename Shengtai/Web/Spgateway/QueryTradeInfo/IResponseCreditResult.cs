@@ -5,13 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shengtai.Web.Spgateway
+namespace Shengtai.Web.Spgateway.QueryTradeInfo
 {
     /// <summary>
-    /// Samaung Pay支付回傳參數
+    /// 信用卡專屬欄位： 當該筆交易為信用卡時 （包含：國外卡、國旅卡、ApplePay、 GooglePay、SamsungPay）
     /// </summary>
-    /// <seealso cref="Shengtai.Web.Spgateway.ResponseResult" />
-    public interface IResponseSamaungPayResult : IResponseResult
+    /// <seealso cref="Shengtai.Web.Spgateway.QueryTradeInfo.IResponseResult" />
+    public interface IResponseCreditResult : IResponseResult
     {
         /// <summary>
         /// 金融機構回應碼 
@@ -20,7 +20,7 @@ namespace Shengtai.Web.Spgateway
         /// 1.由收單機構所回應的回應碼。 
         /// 2.若交易送至收單機構授權時已是失敗狀態，則本欄位的值會以空值回傳。 
         /// </value>
-        [StringLength(5)]
+        [StringLength(10)]
         string RespondCode { get; set; }
 
         /// <summary>
@@ -30,28 +30,71 @@ namespace Shengtai.Web.Spgateway
         /// 1.由收單機構所回應的授權碼。 
         /// 2.若交易送至收單機構授權時已是失敗狀態，則本欄位的值會以空值回傳。 
         /// </value>
-        [StringLength(6)]
+        [StringLength(10)]
         string Auth { get; set; }
 
         /// <summary>
-        /// 卡號前六碼 
+        /// ECI 值 
         /// </summary>
         /// <value>
-        /// 1.信用卡卡號前六碼。 
+        /// 1.3D 回傳值 eci=1,2,5,6，代表為 3D 交易。 
         /// 2.若交易送至收單機構授權時已是失敗狀態，則本欄位的值會以空值回傳。 
         /// </value>
-        [StringLength(6)]
-        string Card6No { get; set; }
+        [StringLength(1)]
+        string ECI { get; set; }
 
         /// <summary>
-        /// 卡號末四碼 
+        /// 請款金額
         /// </summary>
         /// <value>
-        /// 1.信用卡卡號後四碼。 
-        /// 2.若交易送至收單機構授權時已是失敗狀態，則本欄位的值會以空值回傳。 
+        /// 此筆交易設定的請款金額
         /// </value>
-        [StringLength(4)]
-        string Card4No { get; set; }
+        [StringLength(10)]
+        int CloseAmt { get; set; }
+
+        /// <summary>
+        /// 請款狀態
+        /// </summary>
+        /// <value>
+        /// 請款狀態依不同情況，設定值代表下列意含： 
+        ///     0=未請款 
+        ///     1=等待提送請款至收單機構 
+        ///     2=請款處理中 
+        ///     3=請款完成
+        /// </value>
+        [StringLength(1)]
+        int CloseStatus { get; set; }
+
+        /// <summary>
+        /// 可退款餘額
+        /// </summary>
+        /// <value>
+        /// 此筆交易尚可退款餘額，若此筆交易未請款則此處金額為0
+        /// </value>
+        [StringLength(11)]
+        int BackBalance { get; set; }
+
+        /// <summary>
+        /// 退款狀態
+        /// </summary>
+        /// <value>
+        /// 退款狀態依不同情況，設定值代表下列意含 
+        ///     0=未退款 
+        ///     1=等待提送退款至收單機構 
+        ///     2=退款處理中 
+        ///     3=退款完成
+        /// </value>
+        [StringLength(1)]
+        int BackStatus { get; set; }
+
+        /// <summary>
+        /// 授權結果訊息
+        /// </summary>
+        /// <value>
+        /// 文字，銀行回覆此次信用卡授權結果狀態。
+        /// </value>
+        [StringLength(50)]
+        string RespondMsg { get; set; }
 
         /// <summary>
         /// 分期-期別 
@@ -59,7 +102,7 @@ namespace Shengtai.Web.Spgateway
         /// <value>
         /// 信用卡分期交易期別。 
         /// </value>
-        [StringLength(10)]
+        [StringLength(3)]
         int Inst { get; set; }
 
         /// <summary>
@@ -81,26 +124,15 @@ namespace Shengtai.Web.Spgateway
         int InstEach { get; set; }
 
         /// <summary>
-        /// ECI 值 
+        /// 紅利交易類別
         /// </summary>
         /// <value>
-        /// 1.3D 回傳值 eci=1,2,5,6，代表為 3D 交易。 
-        /// 2.若交易送至收單機構授權時已是失敗狀態，則本欄位的值會以空值回傳。 
-        /// </value>
-        [StringLength(2)]
-        string ECI { get; set; }
-
-        /// <summary>
-        /// 信用卡快速結帳 使用狀態 
-        /// </summary>
-        /// <value>
-        /// 0=該筆交易為非使用信用卡快速結帳功能 
-        /// 1=該筆交易為首次設定信用卡快速結帳功能 
-        /// 2=該筆交易為使用信用卡快速結帳功能 
-        /// 9=該筆交易為取消信用卡快速結帳功能功能
+        /// 此筆信用卡交易是否為使用紅利折抵之交易： 
+        ///     0=一般交易 
+        ///     1=紅利交易
         /// </value>
         [StringLength(1)]
-        int TokenUseStatus { get; set; }
+        int Bonus { get; set; }
 
         /// <summary>
         /// 紅利折抵後實際金額
@@ -114,7 +146,7 @@ namespace Shengtai.Web.Spgateway
         ///     2-3 紅利折抵交易是否成功，視該銀行之設定為準。 
         /// 3.僅有使用紅利折抵交易時才會回傳此參數。 
         /// </value>
-        [StringLength(5)]
+        [StringLength(15)]
         int RedAmt { get; set; }
 
         /// <summary>
@@ -128,7 +160,7 @@ namespace Shengtai.Web.Spgateway
         ///     GOOGLEPAY = GooglePay
         ///     SAMSUNGPAY = SamsungPay
         /// </value>
-        [StringLength(5)]
+        [StringLength(15)]
         PaymentMethods PaymentMethod { get; set; }
     }
 }
