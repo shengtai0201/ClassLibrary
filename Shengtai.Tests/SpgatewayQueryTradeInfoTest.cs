@@ -75,5 +75,29 @@ namespace Shengtai.Tests
             var expected = "62C687AF6409E46E79769FAF54F54FE7E75AAE50BAF0767752A5C337670B8EDB";
             Assert.AreEqual(expected, actual);
         }
+
+        [Test]
+        public void AAA()
+        {
+            // assign
+            var crypto = new Web.Spgateway.QueryTradeInfo.Cryptography("nbR1iU7GSxgmVQ2IAH1REjK2X6VdSXiF", "n2Ii6Q6lumqHVhYD");
+            var trade = new RequestTrade
+            {
+                MerchantID = "MS34923336",
+                //Version = "1.1",
+                //RespondType = "JSON",
+                //TimeStamp = "1485232229",
+                MerchantOrderNo = "840f022",
+                Amt = 300
+            };
+
+            // act
+            var tradeInfo = crypto.GetTradeInfo(trade);
+            var actual = crypto.GetTradeSha(tradeInfo);
+
+            // assert
+            var expected = "379BF1DB8948EE79D8ED77A1EBCB2F57B0FD45D0376B6DA9CF85F539CEF1C127";
+            Assert.AreEqual(expected, actual);
+        }
     }
 }

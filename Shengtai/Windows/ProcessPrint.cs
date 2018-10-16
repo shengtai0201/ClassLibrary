@@ -68,7 +68,7 @@ namespace Shengtai.Windows
 
                 try
                 {
-                    //若程序尚未關閉，強制關閉之
+                    // 若程序尚未關閉，強制關閉之
                     if (!process.CloseMainWindow())
                         process.Kill();
                 }

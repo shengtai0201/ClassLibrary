@@ -1,12 +1,16 @@
 ﻿using CommonServiceLocator;
 using Microsoft.Owin;
+using Newtonsoft.Json;
 using Shengtai.Web;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.Entity;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Principal;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 

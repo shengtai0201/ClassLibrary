@@ -143,6 +143,7 @@
     <Compile Include="Cryptography\Pkcs1.cs" />
     <Compile Include="Cryptography\Pkcs7.cs" />
     <Compile Include="Cryptography\Rsa.cs" />
+    <Compile Include="Http\DefaultExtensions.cs" />
     <Compile Include="ViewModel.cs" />
     <Compile Include="Web\CookieConsentAttribute.cs" />
     <Compile Include="Web\DataAnnotations\CheckBoxAttribute.cs" />

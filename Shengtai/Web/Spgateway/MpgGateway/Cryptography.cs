@@ -59,22 +59,25 @@ namespace Shengtai.Web.Spgateway.MpgGateway
                 .GetProperties(BindingFlags.Instance | BindingFlags.Public)
                 .Select(x => new { x.Name, Value = x.GetValue(trade, null), Order = GetOrder(x) })
                 .Where(x => x.Value != null && !string.IsNullOrWhiteSpace(x.Value.ToString()))
-                .OrderBy(x => x.Order)
+                //.OrderBy(x => x.Order)
+                .OrderBy(x => x.Name)
                 .ToDictionary(x => x.Name, x => x.Value);
 
-            var s = string.Join("&", properties.Select(x => x.Key + "=" + x.Value));
-            var inputBuffer = this.AddPKCS7Padding(Encoding.UTF8.GetBytes(s), 32);
+            return string.Join("&", properties.Select(x => x.Key + "=" + x.Value));
 
-            var aes = new RijndaelManaged
-            {
-                Key = Encoding.UTF8.GetBytes(this.key),
-                IV = Encoding.UTF8.GetBytes(this.iv),
-                Mode = CipherMode.CBC,
-                Padding = PaddingMode.None
-            };
+            //var s = string.Join("&", properties.Select(x => x.Key + "=" + x.Value));
+            //var inputBuffer = this.AddPKCS7Padding(Encoding.UTF8.GetBytes(s), 32);
 
-            var bytes = aes.CreateEncryptor().TransformFinalBlock(inputBuffer, 0, inputBuffer.Length);
-            return this.ByteArrayToHexString(bytes).ToLower();
+            //var aes = new RijndaelManaged
+            //{
+            //    Key = Encoding.UTF8.GetBytes(this.key),
+            //    IV = Encoding.UTF8.GetBytes(this.iv),
+            //    Mode = CipherMode.CBC,
+            //    Padding = PaddingMode.None
+            //};
+
+            //var bytes = aes.CreateEncryptor().TransformFinalBlock(inputBuffer, 0, inputBuffer.Length);
+            //return this.ByteArrayToHexString(bytes).ToLower();
         }
 
         public override string GetTradeSha(string tradeInfo)
