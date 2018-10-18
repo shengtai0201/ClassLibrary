@@ -29,6 +29,32 @@ namespace Shengtai.Tests
         }
 
         [Test]
+        public async void TradeInfoShaTest()
+        {
+            // assign
+            var crypto = new Web.Spgateway.MpgGateway.Cryptography(this.key, this.iv);
+            var trade = new RequestTrade
+            {
+                MerchantID = "MS34923336",
+                //RespondType = "JSON",
+                TimeStamp = "1539839802",
+                Version = "1.2",
+                MerchantOrderNo = "1539839802",
+                Amt = 58
+            };
+
+            string info = crypto.GetTradeInfo(trade);
+            Console.WriteLine(info);
+            string sha = crypto.GetTradeSha(info);
+            Console.WriteLine(sha);
+
+            var request = Request.NewInstance(trade, crypto);
+            request.Version = "1.2";
+
+            var response = await Shengtai.Http.DefaultExtensions.Post<Response>(this.url, request);
+        }
+
+        [Test]
         public void TradeTest()
         {
             // assign

@@ -113,23 +113,5 @@ namespace Shengtai.Tests
             // act
             var actual = new Web.Spgateway.MpgGateway.Cryptography(this.key, this.iv).GetResult(response.TradeInfo);
         }
-
-        [Test]
-        public void AAA()
-        {
-            // assign
-            var crypto = new Web.Spgateway.MpgGateway.Cryptography(this.key, this.iv);
-            var trade = new RequestTrade
-            {
-                MerchantID = "3430112",
-                RespondType = "JSON",
-                TimeStamp = "1485232229",
-                Version = "1.4",
-                MerchantOrderNo = "S_1485232229",
-                Amt = 40,
-                ItemDesc = "UnitTest",
-                CREDIT = 1
-            };
-        }
     }
 }
