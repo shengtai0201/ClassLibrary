@@ -14,6 +14,11 @@ namespace Shengtai
 {
     public static class DefaultExtensions
     {
+        public static string ToUnixTimeStamp(this DateTime dateTime)
+        {
+            return ((int)dateTime.Subtract(new DateTime(1970, 1, 1)).TotalSeconds).ToString();
+        }
+
         public static string GetEnumDescription(this Enum value)
         {
             FieldInfo fi = value.GetType().GetField(value.ToString());
