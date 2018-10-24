@@ -57,9 +57,15 @@ namespace Shengtai.Web.Spgateway.MpgGateway
                 TradeInfo = crypto.GetTradeInfo(trade)
             };
             request.TradeSha = crypto.GetTradeSha(request.TradeInfo);
-            request.Version = "1.4";
+            //request.Version = "1.4";
 
             return request;
+        }
+
+        public Request SetVersion(string version)
+        {
+            this.Version = version;
+            return this;
         }
     }
 }

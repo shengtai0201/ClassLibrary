@@ -13,7 +13,7 @@ namespace Shengtai.Web.Telerik.Mvc
      */
     [Produces("application/json")]
     [Route("api/[controller]")]
-    [ApiController]
+    //[ApiController]
     public abstract class ApiController<TKey, TModel, TEntity> : ControllerBase where TModel : ViewModel<TKey, TModel, TEntity>
     {
         private readonly IApiService<TKey, TModel, TEntity> service;

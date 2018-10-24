@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Shengtai.Web;
+using Shengtai.Web.Telerik;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,6 +15,18 @@ namespace Shengtai
 {
     public static class DefaultExtensions
     {
+        public static void SetDataCollection<TKey, TViewModel, TEntity>(this IDataSourceResponse<TViewModel> response, IQueryable<TEntity> responseData, Action<TViewModel, TEntity> decorator = null) where TViewModel : ViewModel<TKey, TViewModel, TEntity>
+        {
+            var dataCollection = responseData.ToList();
+            foreach (var data in dataCollection)
+            {
+                var viewModel = ViewModel<TKey, TViewModel, TEntity>.NewInstance(data).Build(data);
+                decorator?.Invoke(viewModel, data);
+
+                response.DataCollection.Add(viewModel);
+            }
+        }
+
         public static string ToUnixTimeStamp(this DateTime dateTime)
         {
             return ((int)dateTime.Subtract(new DateTime(1970, 1, 1)).TotalSeconds).ToString();
@@ -64,40 +77,42 @@ namespace Shengtai
             return keyValues;
         }
 
-        public static async Task<SignInResult> PasswordSignInAsync<TUser>(this IAccountService<TUser> service, string account, string password, bool isPersistent, bool lockoutOnFailure) where TUser : IdentityUser
+        public static async Task<SignInResult> PasswordSignInAsync<TUser>(this IAccountService<TUser> service, 
+            UserManager<TUser> userManager, SignInManager<TUser> signInManager, 
+            string account, string password, bool isPersistent, bool lockoutOnFailure) where TUser : IdentityUser
         {
             if (string.IsNullOrEmpty(account))
                 throw new ArgumentNullException("account");
 
             string userId = await service.FindIdByAccountAsync(account);
-            TUser user = await service.UserManager.FindByIdAsync(userId);
+            TUser user = await userManager.FindByIdAsync(userId);
             if (user == null)
                 return SignInResult.Failed;
 
-            SignInResult result = await service.SignInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure);
+            SignInResult result = await signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure);
             if (result.Succeeded)
             {
-                bool flag = service.UserManager.SupportsUserTwoFactor;
+                bool flag = userManager.SupportsUserTwoFactor;
                 if (flag)
                 {
-                    flag = await service.UserManager.GetTwoFactorEnabledAsync(user);
+                    flag = await userManager.GetTwoFactorEnabledAsync(user);
                     if (flag)
                     {
-                        flag = (await service.UserManager.GetValidTwoFactorProvidersAsync(user)).Count > 0;
+                        flag = (await userManager.GetValidTwoFactorProvidersAsync(user)).Count > 0;
                     }
                 }
 
-                if (flag && !(await service.SignInManager.IsTwoFactorClientRememberedAsync(user)))
+                if (flag && !(await signInManager.IsTwoFactorClientRememberedAsync(user)))
                 {
                     ClaimsIdentity claimsIdentity = new ClaimsIdentity(IdentityConstants.TwoFactorUserIdScheme);
                     claimsIdentity.AddClaim(new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name", userId));
 
-                    await AuthenticationHttpContextExtensions.SignInAsync(service.SignInManager.Context, IdentityConstants.TwoFactorUserIdScheme, new ClaimsPrincipal(claimsIdentity));
+                    await AuthenticationHttpContextExtensions.SignInAsync(signInManager.Context, IdentityConstants.TwoFactorUserIdScheme, new ClaimsPrincipal(claimsIdentity));
 
                     return SignInResult.TwoFactorRequired;
                 }
 
-                await service.SignInManager.SignInAsync(user, isPersistent, null);
+                await signInManager.SignInAsync(user, isPersistent, null);
                 return SignInResult.Success;
             }
 

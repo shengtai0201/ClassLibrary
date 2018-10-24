@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.28010.2026
+VisualStudioVersion = 15.0.28010.2046
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShengtaiCore21", "ShengtaiCore\ShengtaiCore21.csproj", "{3D8F5C36-5BBA-40F2-947E-513CE1E4A9EF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShengtaiCore2x", "ShengtaiCore\ShengtaiCore2x.csproj", "{7FA9BA24-258A-4B2B-B65D-AD201A518182}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{3D8F5C36-5BBA-40F2-947E-513CE1E4A9EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3D8F5C36-5BBA-40F2-947E-513CE1E4A9EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3D8F5C36-5BBA-40F2-947E-513CE1E4A9EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3D8F5C36-5BBA-40F2-947E-513CE1E4A9EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7FA9BA24-258A-4B2B-B65D-AD201A518182}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FA9BA24-258A-4B2B-B65D-AD201A518182}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FA9BA24-258A-4B2B-B65D-AD201A518182}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FA9BA24-258A-4B2B-B65D-AD201A518182}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {10727F24-03CA-4001-9323-06DD43481A75}
+		SolutionGuid = {0C8ED35D-DB98-44C8-BABD-1CFFD25E63DA}
 	EndGlobalSection
 EndGlobal

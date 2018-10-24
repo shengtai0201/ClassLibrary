@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shengtai.Web.Telerik;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Text;
 namespace Shengtai
 {
     // 僅支援淺層複製
-    public abstract class ViewModel<TKey, TViewModel, TEntity>
+    public abstract class ViewModel<TKey, TViewModel, TEntity> where TViewModel : ViewModel<TKey, TViewModel, TEntity>
     {
         public TKey GetKey()
         {

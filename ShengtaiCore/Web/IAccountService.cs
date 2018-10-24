@@ -8,8 +8,8 @@ namespace Shengtai.Web
 {
     public interface IAccountService<TUser> where TUser : IdentityUser
     {
-        SignInManager<TUser> SignInManager { get; set; }
-        UserManager<TUser> UserManager { get; set; }
+        //SignInManager<TUser> SignInManager { get; set; }
+        //UserManager<TUser> UserManager { get; set; }
 
         Task<string> FindIdByAccountAsync(string account);
     }
