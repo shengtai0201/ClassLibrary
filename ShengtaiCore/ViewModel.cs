@@ -30,7 +30,10 @@ namespace Shengtai
         /// </summary>
         /// <param name="entity">來自資料庫的 entity</param>
         /// <returns>view model</returns>
-        public abstract TViewModel Build(TEntity entity);
+        public virtual TViewModel Build(TEntity entity)
+        {
+            return this as TViewModel;
+        }
 
         /// <summary>
         /// 透過 Reflection 於執行期設定其值
