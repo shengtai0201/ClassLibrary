@@ -20,7 +20,7 @@ namespace Shengtai
             var dataCollection = responseData.ToList();
             foreach (var data in dataCollection)
             {
-                var viewModel = ViewModel<TKey, TViewModel, TEntity>.NewInstance(data).Build(data);
+                var viewModel = ViewModel<TKey, TViewModel, TEntity>.NewInstance(data);
                 decorator?.Invoke(viewModel, data);
 
                 response.DataCollection.Add(viewModel);
@@ -75,6 +75,14 @@ namespace Shengtai
             }
 
             return keyValues;
+        }
+
+        public static KeyValuePair<int, string> GetEnumKeyValue(this Enum e)
+        {
+            int key = Convert.ToInt32(e);
+            string value = e.GetEnumDescription();
+
+            return new KeyValuePair<int, string>(key, value);
         }
 
         public static async Task<SignInResult> PasswordSignInAsync<TUser>(this IAccountService<TUser> service, 

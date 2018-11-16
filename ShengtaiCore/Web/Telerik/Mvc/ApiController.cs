@@ -41,7 +41,7 @@ namespace Shengtai.Web.Telerik.Mvc
                 return NotFound();
             else
             {
-                var model = ViewModel<TKey, TModel, TEntity>.NewInstance(entity).Build(entity);
+                var model = ViewModel<TKey, TModel, TEntity>.NewInstance(entity);
                 return Ok(model);
             }
         }

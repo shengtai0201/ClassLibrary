@@ -30,7 +30,7 @@ namespace Shengtai
         /// </summary>
         /// <param name="entity">來自資料庫的 entity</param>
         /// <returns>view model</returns>
-        public virtual TViewModel Build(TEntity entity)
+        protected virtual TViewModel Build(TEntity entity)
         {
             return this as TViewModel;
         }
@@ -73,7 +73,7 @@ namespace Shengtai
                     viewModelProperty.SetValue(viewModel, propertyValue);
             }
 
-            return viewModel;
+            return viewModel.Build(entity);
         }
     }
 }
