@@ -5,6 +5,8 @@ using Shengtai.Web.Telerik;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Claims;
@@ -125,6 +127,36 @@ namespace Shengtai
             }
 
             return result;
+        }
+
+        public static void ProcessStart(string fileName, string arguments)
+        {
+            ProcessStartInfo startInfo = new ProcessStartInfo
+            {
+                FileName = fileName,
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                CreateNoWindow = true,
+                Arguments = arguments
+            };
+
+            Process process = Process.Start(startInfo);
+
+            StreamReader reader = process.StandardOutput;
+            string line = reader.ReadLine();
+            while (!reader.EndOfStream)
+            {
+                if (!string.IsNullOrEmpty(line))
+                    Console.WriteLine(line);
+
+                line = reader.ReadLine();
+            }
+            reader.Close();
+            reader.Dispose();
+
+            process.WaitForExit();
+            process.Close();
+            process.Dispose();
         }
     }
 }

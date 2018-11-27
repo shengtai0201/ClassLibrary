@@ -9,6 +9,7 @@ namespace Shengtai.Options
     public interface IAppSettings<T> where T : IDefaultConnection
     {
         T ConnectionStrings { get; set; }
-        string DateTimeOffsetFormat { get; set; }
+        //string DateTimeOffsetFormat { get; set; }
+        Logging Logging { get; set; }
     }
 }
