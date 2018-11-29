@@ -134,23 +134,29 @@ namespace Shengtai
             ProcessStartInfo startInfo = new ProcessStartInfo
             {
                 FileName = fileName,
-                UseShellExecute = false,
+                UseShellExecute = true,
+                CreateNoWindow = false,
                 RedirectStandardOutput = true,
-                CreateNoWindow = true,
                 Arguments = arguments
             };
 
             Process process = Process.Start(startInfo);
 
             StreamReader reader = process.StandardOutput;
-            string line = reader.ReadLine();
-            while (!reader.EndOfStream)
-            {
-                if (!string.IsNullOrEmpty(line))
-                    Console.WriteLine(line);
+            //string line = reader.ReadLine();
+            //while (!reader.EndOfStream)
+            //{
+            //    if (!string.IsNullOrEmpty(line))
+            //        Console.WriteLine(line);
 
-                line = reader.ReadLine();
-            }
+            //    line = reader.ReadLine();
+            //}
+            //string line = reader.ReadLine();
+
+            string line = null;
+            while (!string.IsNullOrEmpty(line = reader.ReadLine()))
+                Console.WriteLine(line);
+
             reader.Close();
             reader.Dispose();
 
