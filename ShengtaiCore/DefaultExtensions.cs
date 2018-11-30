@@ -136,13 +136,13 @@ namespace Shengtai
                 FileName = fileName,
                 UseShellExecute = true,
                 CreateNoWindow = false,
-                RedirectStandardOutput = true,
+                //RedirectStandardOutput = true,
                 Arguments = arguments
             };
 
             Process process = Process.Start(startInfo);
 
-            StreamReader reader = process.StandardOutput;
+            //StreamReader reader = process.StandardOutput;
             //string line = reader.ReadLine();
             //while (!reader.EndOfStream)
             //{
@@ -153,12 +153,12 @@ namespace Shengtai
             //}
             //string line = reader.ReadLine();
 
-            string line = null;
-            while (!string.IsNullOrEmpty(line = reader.ReadLine()))
-                Console.WriteLine(line);
+            //string line = null;
+            //while (!string.IsNullOrEmpty(line = reader.ReadLine()))
+            //    Console.WriteLine(line);
 
-            reader.Close();
-            reader.Dispose();
+            //reader.Close();
+            //reader.Dispose();
 
             process.WaitForExit();
             process.Close();
@@ -174,7 +174,7 @@ namespace Shengtai
             ProcessStartInfo startInfo = new ProcessStartInfo
             {
                 FileName = fileName,
-                UseShellExecute = true,
+                UseShellExecute = false,
                 CreateNoWindow = false,
                 RedirectStandardOutput = true,
                 Arguments = arguments
